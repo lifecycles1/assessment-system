@@ -5,8 +5,8 @@ const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
 const formidable = require("formidable");
 const fs = require("fs");
 
-// Controller for handling code submission
-const submitCode = async (req, res) => {
+// Controller for handling assessment submissions
+const studentSubmitAssessment = async (req, res) => {
   try {
     let AssessmentModel;
     let assessmentData = {};
@@ -60,8 +60,8 @@ const submitCode = async (req, res) => {
 const getStudentAssessments = async (req, res) => {
   try {
     const { email } = req.params;
-    const editorAssessments = await EditorAssessment.find({ email });
-    const fileAssessments = await FileAssessment.find({ email });
+    const editorAssessments = await EditorAssessment.find({ email }).sort({ createdAt: -1 });
+    const fileAssessments = await FileAssessment.find({ email }).sort({ createdAt: -1 });
     const studentAssessments = [...editorAssessments, ...fileAssessments];
     return res.status(200).json(studentAssessments);
   } catch (error) {
@@ -72,8 +72,8 @@ const getStudentAssessments = async (req, res) => {
 
 const getTeacherAssessments = async (req, res) => {
   try {
-    const editorAssessments = await EditorAssessment.find({ status: "pending" });
-    const fileAssessments = await FileAssessment.find({ status: "pending" });
+    const editorAssessments = await EditorAssessment.find({ status: "pending" }).sort({ createdAt: -1 });
+    const fileAssessments = await FileAssessment.find({ status: "pending" }).sort({ createdAt: -1 });
     const teacherAssessments = [...editorAssessments, ...fileAssessments];
     return res.status(200).json(teacherAssessments);
   } catch (error) {
@@ -82,4 +82,32 @@ const getTeacherAssessments = async (req, res) => {
   }
 };
 
-module.exports = { submitCode, getStudentAssessments, getTeacherAssessments };
+// Update a student's assessment status, grade, and feedback
+const markAssessment = async (req, res) => {
+  try {
+    const { assessmentId } = req.params;
+    const { type, status, grade, feedback } = req.body;
+
+    console.log("object fields", assessmentId, type, status, grade, feedback);
+
+    // Determine the model based on the type
+    let AssessmentModel;
+    if (type === "file") {
+      AssessmentModel = FileAssessment;
+    } else if (type === "code") {
+      AssessmentModel = EditorAssessment;
+    }
+
+    console.log("AssessmentModel", AssessmentModel);
+
+    // Find the assessment by ID and update its fields
+    await AssessmentModel.findOneAndUpdate({ _id: assessmentId }, { status, "evaluation.grade": grade, "evaluation.feedback": feedback });
+
+    return res.status(200).json({ message: "Assessment updated successfully." });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error updating assessment." });
+  }
+};
+
+module.exports = { studentSubmitAssessment, getStudentAssessments, getTeacherAssessments, markAssessment };

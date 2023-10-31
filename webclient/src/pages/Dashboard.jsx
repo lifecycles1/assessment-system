@@ -5,20 +5,22 @@ import TeacherDashboard from "../components/teacher-dash/TeacherDashboard";
 import NavigationBar from "../components/NavigationBar";
 
 const Dashboard = () => {
-  const [userRole, setUserRole] = useState(null);
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decoded = jwt_decode(token);
-      setUserRole(decoded.role);
+    const encoded = localStorage.getItem("token");
+    if (encoded) {
+      const decoded = jwt_decode(encoded);
+      setToken(decoded);
     }
   }, []);
+
+  if (!token) return null;
 
   return (
     <div>
       <NavigationBar />
-      {userRole === "student" ? <StudentDashboard /> : <TeacherDashboard />}
+      {token?.role === "teacher" ? <TeacherDashboard token={token} /> : <StudentDashboard token={token} />}
     </div>
   );
 };

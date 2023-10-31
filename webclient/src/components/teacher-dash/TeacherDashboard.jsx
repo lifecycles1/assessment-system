@@ -1,22 +1,15 @@
-import SubmissionList from "./SubmissionList";
-import jwt_decode from "jwt-decode";
-import { useState, useEffect } from "react";
+/* eslint-disable react/prop-types */
+import { useEffect } from "react";
+import TeacherAssessments from "./TeacherAssessments";
 
-const TeacherDashboard = () => {
-  const [email, setEmail] = useState("");
-
+const TeacherDashboard = ({ token }) => {
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decoded = jwt_decode(token);
-      setEmail(decoded.email);
-    }
-  }, []);
-
+    console.log("teacher dashboard token", token);
+  }, [token]);
   return (
     <div>
-      <h1>Welcome, {email.split("@")[0]}</h1>
-      <SubmissionList />
+      <h1>Welcome, {token?.email.split("@")[0]}</h1>
+      <TeacherAssessments />
     </div>
   );
 };

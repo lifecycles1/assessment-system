@@ -1,20 +1,10 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
-import jwt_decode from "jwt-decode";
 import { useDropzone } from "react-dropzone";
 
-const FileUpload = ({ question }) => {
+const FileUpload = ({ token, question }) => {
   const [responseMessage, setResponseMessage] = useState(null);
-  const [email, setEmail] = useState(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decoded = jwt_decode(token);
-      setEmail(decoded.email);
-    }
-  }, []);
 
   const maxFileSize = 1024 * 1024; // 1MB
   const onDrop = async (acceptedFiles, rejectedFiles) => {
@@ -35,7 +25,7 @@ const FileUpload = ({ question }) => {
     // Create a FormData object to send the file and the question to the server
     const formData = new FormData();
     formData.append("file", selectedFile);
-    formData.append("email", email);
+    formData.append("email", token.email);
     formData.append("fileName", selectedFile.name);
     formData.append("fileType", selectedFile.type);
     formData.append("language", selectedFile.name.endsWith(".js") ? "javascript" : "python");
@@ -61,7 +51,7 @@ const FileUpload = ({ question }) => {
 
   return (
     <div className="bg-gray-100 rounded-md p-4 border border-gray-300 mt-4 w-[400px] mx-auto">
-      <h3 className="text-lg font-semibold mb-2">File Upload</h3>
+      <h3 className="text-lg font-semibold mb-2">Upload your file</h3>
       <div {...getRootProps()} className={`mb-2 border-2 rounded-md ${getColor({ isDragAccept, isDragReject, isFocused })} text-gray-600 ${isDragActive ? "bg-blue-200" : ""}`}>
         <input {...getInputProps()} />
         <p>Drag &#39;n&#39; drop a .js or .py file here, or click to select one.</p>

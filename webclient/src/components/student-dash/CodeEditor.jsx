@@ -1,29 +1,18 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "ace-builds/src-noconflict/ace";
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/theme-monokai";
 import AceEditor from "react-ace";
 import axios from "axios";
-import jwt_decode from "jwt-decode";
 
-const CodeEditor = ({ question }) => {
-  const [email, setEmail] = useState(null);
+const CodeEditor = ({ token, question }) => {
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
   const [javascriptCode, setJavascriptCode] = useState(`function solution(a) {\n// write your solution here\n}`);
   const [pythonCode, setPythonCode] = useState(`def solution(a):`);
   const [responseMessage, setResponseMessage] = useState(null);
   const [testResults, setTestResults] = useState(null);
-  const pythonIndentationMessage = "Python code must be indented with 6 spaces.";
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decoded = jwt_decode(token);
-      setEmail(decoded.email);
-    }
-  }, []);
 
   const runTests = async () => {
     const codeToRun = selectedLanguage === "javascript" ? javascriptCode : pythonCode;
@@ -48,7 +37,7 @@ const CodeEditor = ({ question }) => {
   const submitCode = async () => {
     const codeToSubmit = selectedLanguage === "javascript" ? javascriptCode : pythonCode;
     const payload = {
-      email: email,
+      email: token.email,
       language: selectedLanguage,
       question: question,
       code: codeToSubmit,
@@ -62,49 +51,65 @@ const CodeEditor = ({ question }) => {
     }
   };
 
+  const scrollToTestResults = () => {
+    window.scroll({
+      top: window.scrollY + 400,
+      behavior: "smooth",
+    });
+  };
+
   return (
-    <div className="bg-gray-100 rounded-md p-4 border border-gray-300 mx-auto w-[600px]">
-      <div className="mb-4">
-        <div className="flex items-center space-x-4">
-          <button onClick={() => setSelectedLanguage("javascript")} className={`px-4 py-1 rounded-full ${selectedLanguage === "javascript" ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-600"}`}>
+    <div className="rounded-md p-4 border border-gray-300 mx-auto w-[600px] bg-[#272822]">
+      <div className="mb-4 -mt-4">
+        <div className="flex items-center space-x-4 py-4 -mb-4 text-sm">
+          <button onClick={() => setSelectedLanguage("javascript")} className={`px-2 py-1 rounded border border-[#0a0a0a] text-gray-300 ${selectedLanguage === "javascript" ? "bg-[#1a1a1a]" : "bg-[#272822] hover:bg-[#1a1a1a]"}`}>
             JavaScript
           </button>
-          <button onClick={() => setSelectedLanguage("python")} className={`px-4 py-1 rounded-full ${selectedLanguage === "python" ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-600"}`}>
+          <button onClick={() => setSelectedLanguage("python")} className={`px-2 py-1 rounded border border-[#0a0a0a] text-gray-300 ${selectedLanguage === "python" ? "bg-[#1a1a1a]" : "bg-[#272822] hover:bg-[#1a1a1a]"}`}>
             Python
           </button>
-          {selectedLanguage === "python" && <div className="text-sm text-gray-600">{pythonIndentationMessage}</div>}
         </div>
       </div>
       {selectedLanguage === "javascript" && <AceEditor mode={selectedLanguage} theme="monokai" onChange={(newCode) => setJavascriptCode(newCode)} value={javascriptCode} editorProps={{ $blockScrolling: true }} setOptions={{ useWorker: false }} width="100%" height="300px" />}
-      {selectedLanguage === "python" && <AceEditor mode={selectedLanguage} theme="monokai" onChange={(newCode) => setPythonCode(newCode)} value={pythonCode} editorProps={{ $blockScrolling: true }} setOptions={{ useWorker: false, tabSize: 6 }} width="100%" height="300px" />}
-      <div className="space-x-10">
-        <button onClick={runTests} className="px-4 py-2 bg-blue-500 text-white rounded-full mt-4 hover:bg-blue-600">
-          Run Tests
-        </button>
-        <button onClick={submitCode} className="px-4 py-2 bg-blue-500 text-white rounded-full mt-4 hover:bg-blue-600">
+      {selectedLanguage === "python" && <AceEditor mode={selectedLanguage} theme="monokai" onChange={(newCode) => setPythonCode(newCode)} value={pythonCode} editorProps={{ $blockScrolling: true }} setOptions={{ useWorker: false }} width="100%" height="300px" />}
+      <div className="flex justify-center items-center space-x-12 text-sm border-t border-b border-blue-200 py-1">
+        <button onClick={submitCode} className="px-2 py-1 bg-[#23776d] text-white rounded hover:bg-[#14756a]">
           Submit Code
         </button>
+        <button onClick={runTests} className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+          Run Tests
+        </button>
+        {testResults && (
+          <div onClick={scrollToTestResults} className="relative cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#807e7e" className="w-4 -ml-11">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 5.25l-7.5 7.5-7.5-7.5m15 6l-7.5 7.5-7.5-7.5" />
+            </svg>
+          </div>
+        )}
       </div>
-      {responseMessage && <div className="mt-4 text-sm text-gray-600">{responseMessage}</div>}
+      {responseMessage && <div className="mt-4 text-sm text-red-400">{responseMessage}</div>}
       {testResults && (
-        <div className="bg-gray-100 p-4 rounded-md border border-gray-300 mt-4">
-          <div className={`font-semibold text-lg mb-2 ${testResults.isCorrect.every((result) => result) ? "text-green-600" : "text-red-600"}`}>{testResults.isCorrect.every((result) => result) ? "All Tests Passed" : "Tests Failed"}</div>
-          <div className="h-[350px] overflow-x-auto overflow-y-auto">
+        <div className="px-4 py-2 rounded-b-md border-b border-l border-r border-gray-300 bg-[#272822]">
+          <div className={`font-semibold text-lg mb-2 ${testResults.isCorrect.every((result) => result) ? "text-[#23776d]" : "text-red-400"}`}>{`Tests Passed: ${testResults.isCorrect.filter((result) => result).length}/${testResults.isCorrect.length}`}</div>
+          <div className="h-[350px] overflow-y-auto">
             {testResults.inputs.map((input, index) => (
-              <div key={index} className="mb-4 border p-4 rounded-md">
-                <div className="font-semibold">Test Case {index + 1}:</div>
-                <div className="mb-2 flex">
+              <div key={index} className="mb-4 border p-4 rounded-md overflow-x-auto">
+                <div className="flex px-4 justify-between">
+                  <div className="font-semibold text-gray-400">Test Case {index + 1}:</div>
+                  <div className={`${testResults.isCorrect[index] ? "text-[#46c3b4]" : "text-red-400"}`}>{testResults.isCorrect[index] ? "Passed ✓" : "Wrong answer ✗"}</div>
+                </div>
+                <div className="mb-2 flex white break-all space-x-10">
                   <div className="flex-1">
-                    <div className={`font-semibold ${testResults.isCorrect[index] ? "text-green-600" : "text-red-600"}`}>Input:</div>
-                    <div className="text-gray-700">{JSON.stringify(input)}</div>
+                    <div className={`font-semibold text-neutral-50`}>Input:</div>
+                    <div className="text-neutral-50">{JSON.stringify(input)}</div>
                   </div>
                   <div className="flex-1">
-                    <div className={`font-semibold ${testResults.isCorrect[index] ? "text-green-600" : "text-red-600"}`}>Output:</div>
-                    <div className="text-gray-700">{JSON.stringify(testResults.outputs[index])}</div>
+                    <div className={`font-semibold text-neutral-50`}>Output:</div>
+                    <div className="text-neutral-50">{JSON.stringify(testResults.outputs[index])}</div>
                   </div>
                   <div className="flex-1">
-                    <div className={`font-semibold ${testResults.isCorrect[index] ? "text-green-600" : "text-red-600"}`}>Expected Output:</div>
-                    <div className="text-gray-700">{JSON.stringify(testResults.expectedOutputs[index])}</div>
+                    <div className={`font-semibold text-neutral-50`}>Expected Output:</div>
+                    <div className="text-neutral-50">{JSON.stringify(testResults.expectedOutputs[index])}</div>
                   </div>
                 </div>
               </div>

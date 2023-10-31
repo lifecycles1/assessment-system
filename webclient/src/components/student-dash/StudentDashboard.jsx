@@ -1,28 +1,23 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import CodeSubmission from "./CodeSubmission";
 import StudentAssessments from "./StudentAssessments";
-import jwt_decode from "jwt-decode";
 
-const StudentDashboard = () => {
-  const [email, setEmail] = useState(null);
+const StudentDashboard = ({ token }) => {
   const [showSubmissions, setShowSubmissions] = useState(false);
   const toggleView = () => setShowSubmissions((prevState) => !prevState);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decoded = jwt_decode(token);
-      setEmail(decoded.email);
-    }
-  }, []);
+    console.log("student dashboard token", token);
+  }, [token]);
 
   return (
-    <div className="relative">
-      {email && <h1 className="text-2xl font-semibold">Welcome, {email.split("@")[0]}!</h1>}
-      <button onClick={toggleView} className="absolute top-5 right-5 py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded">
+    <div className="relative bg">
+      <h1 className="text-2xl font-semibold pl-10">Welcome, {token?.email.split("@")[0]}!</h1>
+      <button onClick={toggleView} className="text-sm absolute top-5 right-5 py-1 px-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded">
         {showSubmissions ? "Code Submission" : "Submitted Assessments"}
       </button>
-      {showSubmissions ? <StudentAssessments /> : <CodeSubmission />}
+      {showSubmissions ? <StudentAssessments token={token} /> : <CodeSubmission token={token} />}
     </div>
   );
 };

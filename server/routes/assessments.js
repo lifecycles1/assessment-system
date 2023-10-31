@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const { submitCode, getStudentAssessments, getTeacherAssessments } = require("../controllers/assessments");
+const { studentSubmitAssessment, getStudentAssessments, getTeacherAssessments, markAssessment } = require("../controllers/assessments");
 
-router.post("/submit-code", submitCode);
+router.post("/submit-code", studentSubmitAssessment);
 
 router.get("/student-assessments/:email", getStudentAssessments);
 
 router.get("/teacher-assessments", getTeacherAssessments);
+
+router.put("/teacher-assessments/mark/:assessmentId", markAssessment);
 
 module.exports = router;

@@ -1,10 +1,11 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import CodeEditor from "./CodeEditor";
 import FileUpload from "./FileUpload";
 import Question from "./Question";
 import axios from "axios";
 
-const CodeSubmission = () => {
+const CodeSubmission = ({ token }) => {
   const [useCodeEditor, setUseCodeEditor] = useState(true);
   const [question, setQuestion] = useState(null);
 
@@ -23,14 +24,14 @@ const CodeSubmission = () => {
 
   return (
     <div className="p-4 -mt-10">
-      <h2 className="text-2xl font-semibold mb-4 ml-96 text-center">Code Submission</h2>
+      <h2 className="text-xl font-semibold mb-4 ml-96 text-center">Code Submission</h2>
       <div className="mb-4">
-        <div className="flex items-center justify-center ml-96">
-          <button onClick={() => setUseCodeEditor(true)} className={`mr-4 px-4 py-2 rounded-full ${useCodeEditor ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-600"}`}>
+        <div className="flex items-center justify-center ml-96 text-sm">
+          <button onClick={() => setUseCodeEditor(true)} className={`mr-4 px-2 py-1 rounded ${useCodeEditor ? "bg-blue-600 text-white" : "bg-blue-200 text-gray-600 hover:bg-blue-500 hover:text-gray-200"}`}>
             Code Editor
           </button>
           <div>or</div>
-          <button onClick={() => setUseCodeEditor(false)} className={`ml-4 px-4 py-2 rounded-full ${!useCodeEditor ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-600"}`}>
+          <button onClick={() => setUseCodeEditor(false)} className={`ml-4 px-2 py-1 rounded ${!useCodeEditor ? "bg-blue-600 text-white" : "bg-blue-200 text-gray-600 hover:bg-blue-500 hover:text-gray-200"}`}>
             File Upload
           </button>
         </div>
@@ -41,7 +42,7 @@ const CodeSubmission = () => {
           <Question question={question} />
         </div>
         {/* Right half */}
-        <div className="w-1/2 text-center">{useCodeEditor ? <CodeEditor question={question} /> : <FileUpload question={question} />}</div>
+        <div className="w-1/2 text-center">{useCodeEditor ? <CodeEditor token={token} question={question} /> : <FileUpload token={token} question={question} />}</div>
       </div>
     </div>
   );

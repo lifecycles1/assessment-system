@@ -24,7 +24,7 @@ const DisplayTestsModal = ({ isOpen, onClose, responseData, errorMessage }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div ref={modalContentRef} className="absolute bg-white rounded-lg shadow-lg p-4 max-w-xl border-2 border-dashed border-blue-600">
+      <div ref={modalContentRef} className="absolute bg-white rounded-lg shadow-2xl shadow-sky-950 p-4 max-w-xl w-[500px] border-2 border-dashed border-blue-600/50">
         <span className="absolute top-2 right-2 text-gray-600 hover:text-gray-800 text-xl cursor-pointer" onClick={onClose}>
           &times;
         </span>

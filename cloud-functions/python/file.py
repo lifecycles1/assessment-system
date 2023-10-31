@@ -1,4 +1,5 @@
 import json
+from google.cloud import storage
 
 def deep_equal(a, b):
     if a == b:
@@ -21,7 +22,7 @@ def deep_equal(a, b):
         return True
     return False
 
-def python_code(request):
+def python_file(request):
     # Handling CORS headers for preflight requests
     if request.method == "OPTIONS":
         headers = {
@@ -33,17 +34,29 @@ def python_code(request):
 
     try:
         request_data = request.get_json()
-        code = request_data["code"]
+        file_url = request_data["fileUrl"]
         question = request_data["question"]
 
         results = []
 
+        storage_client = storage.Client()
+
+        # Extract the bucket and file name from the file URL
+        url_parts = file_url.split("//storage.googleapis.com/")[1].split("/")
+        bucket_name = url_parts[0]
+        file_name = "/".join(url_parts[1:])
+
+        # Download the code file from Google Cloud Storage
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(file_name)
+        file_contents = blob.download_as_text()
+
         for input_data in question["inputsOutputs"]:
             sandbox_locals = {}
-            
+
             code_string = (
                 "def execute_user_code():\n"
-                f"  {code}\n"
+                f"  {file_contents}\n"
                 f"  globals()['res'] = solution({json.dumps(input_data['inputs'])})\n"
                 "execute_user_code()"
             )
@@ -62,7 +75,8 @@ def python_code(request):
 
         headers = {
             "Access-Control-Allow-Origin": "*",
-            "Content-Type": "application/json"}
+            "Content-Type": "application/json"
+        }
         return (json.dumps(assessment_result), 200, headers)
 
     except Exception as e:
@@ -70,5 +84,6 @@ def python_code(request):
         traceback.print_exc()
         headers = {
             "Access-Control-Allow-Origin": "*",
-            "Content-Type": "application/json"}
+            "Content-Type": "application/json"
+        }
         return (json.dumps({"error": str(e)}), 200, headers)
