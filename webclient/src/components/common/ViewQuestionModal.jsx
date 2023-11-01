@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+import PropTypes from "prop-types";
 
 const ViewQuestionModal = ({ isOpen, onClose, question }) => {
   if (!isOpen) return null;
@@ -28,6 +28,12 @@ const ViewQuestionModal = ({ isOpen, onClose, question }) => {
       </div>
     </div>
   );
+};
+
+ViewQuestionModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  question: PropTypes.object.isRequired,
 };
 
 export default ViewQuestionModal;

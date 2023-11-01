@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+import PropTypes from "prop-types";
 import { useState } from "react";
 import TruncateFeedback from "./TruncateFeedback";
 import DisplayTestsModal from "../teacher-dash/DisplayTestsModal";
@@ -9,7 +9,7 @@ import axios from "axios";
 const AssessmentCard = ({ listType, assessment, setAssessments }) => {
   // modal for running tests
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalData, setModalData] = useState("");
+  const [modalData, setModalData] = useState({});
   const [testResponseMessage, setTestResponseMessage] = useState(null);
   // modal for viewing question
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
@@ -250,6 +250,12 @@ const AssessmentCard = ({ listType, assessment, setAssessments }) => {
       )}
     </>
   );
+};
+
+AssessmentCard.propTypes = {
+  listType: PropTypes.string,
+  assessment: PropTypes.object.isRequired,
+  setAssessments: PropTypes.func,
 };
 
 export default AssessmentCard;

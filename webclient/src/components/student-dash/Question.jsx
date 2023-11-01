@@ -1,4 +1,5 @@
-/* eslint-disable react/prop-types */
+import PropTypes from "prop-types";
+
 const Question = ({ question }) => {
   if (!question) return null;
   return (
@@ -22,6 +23,10 @@ const Question = ({ question }) => {
       <pre className="text-sm">{question.example}</pre>
     </div>
   );
+};
+
+Question.propTypes = {
+  question: PropTypes.object,
 };
 
 export default Question;

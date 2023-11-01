@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+import PropTypes from "prop-types";
 import { useState } from "react";
 import "ace-builds/src-noconflict/ace";
 import "ace-builds/src-noconflict/mode-javascript";
@@ -120,6 +120,11 @@ const CodeEditor = ({ token, question }) => {
       )}
     </div>
   );
+};
+
+CodeEditor.propTypes = {
+  token: PropTypes.object.isRequired,
+  question: PropTypes.object,
 };
 
 export default CodeEditor;

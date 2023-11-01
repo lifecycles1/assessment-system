@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+import PropTypes from "prop-types";
 import { useState } from "react";
 
 const TruncateFeedback = ({ text, maxWords }) => {
@@ -20,6 +20,11 @@ const TruncateFeedback = ({ text, maxWords }) => {
       {!isTruncated && text}
     </div>
   );
+};
+
+TruncateFeedback.propTypes = {
+  text: PropTypes.string.isRequired,
+  maxWords: PropTypes.number.isRequired,
 };
 
 export default TruncateFeedback;

@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import CodeEditor from "./CodeEditor";
 import FileUpload from "./FileUpload";
@@ -46,6 +46,10 @@ const CodeSubmission = ({ token }) => {
       </div>
     </div>
   );
+};
+
+CodeSubmission.propTypes = {
+  token: PropTypes.object.isRequired,
 };
 
 export default CodeSubmission;

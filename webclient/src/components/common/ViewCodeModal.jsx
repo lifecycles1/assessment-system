@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+import PropTypes from "prop-types";
 
 const ViewCodeModal = ({ isOpen, onClose, code }) => {
   if (!isOpen) return null;
@@ -15,6 +15,12 @@ const ViewCodeModal = ({ isOpen, onClose, code }) => {
       </div>
     </div>
   );
+};
+
+ViewCodeModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  code: PropTypes.string.isRequired,
 };
 
 export default ViewCodeModal;

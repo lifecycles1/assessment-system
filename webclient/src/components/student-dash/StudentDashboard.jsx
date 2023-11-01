@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import CodeSubmission from "./CodeSubmission";
 import StudentAssessments from "./StudentAssessments";
@@ -31,6 +31,10 @@ const StudentDashboard = ({ token }) => {
       {showSubmissions ? <StudentAssessments assessments={assessments} /> : <CodeSubmission token={token} />}
     </div>
   );
+};
+
+StudentDashboard.propTypes = {
+  token: PropTypes.object.isRequired,
 };
 
 export default StudentDashboard;

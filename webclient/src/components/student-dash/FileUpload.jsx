@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+import PropTypes from "prop-types";
 import { useState } from "react";
 import axios from "axios";
 import { useDropzone } from "react-dropzone";
@@ -42,23 +42,28 @@ const FileUpload = ({ token, question }) => {
 
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject, isFocused } = useDropzone({ onDrop, maxFiles: 1, maxSize: maxFileSize, accept: { "text/javascript": [".js"], "text/x-python": [".py"] } });
 
-  const getColor = (props) => {
-    if (props.isDragAccept) return "bg-green-300 border-green-500";
-    if (props.isDragReject) return "bg-red-300 border-red-500";
-    if (props.isFocused) return "bg-blue-300 border-blue-500";
+  const getColor = (isDragAccept, isDragReject, isFocused) => {
+    if (isDragAccept) return "bg-green-300 border-green-500";
+    if (isDragReject) return "bg-red-300 border-red-500";
+    if (isFocused) return "bg-blue-300 border-blue-500";
     return "bg-gray-100 border-gray-300";
   };
 
   return (
     <div className="bg-gray-100 rounded-md p-4 border border-gray-300 mt-4 w-[400px] mx-auto">
       <h3 className="text-lg font-semibold mb-2">Upload your file</h3>
-      <div {...getRootProps()} className={`mb-2 border-2 rounded-md ${getColor({ isDragAccept, isDragReject, isFocused })} text-gray-600 ${isDragActive ? "bg-blue-200" : ""}`}>
+      <div {...getRootProps()} className={`mb-2 border-2 rounded-md ${getColor(isDragAccept, isDragReject, isFocused)} text-gray-600 ${isDragActive ? "bg-blue-200" : ""}`}>
         <input {...getInputProps()} />
         <p>Drag &#39;n&#39; drop a .js or .py file here, or click to select one.</p>
       </div>
       {responseMessage && <div className="mt-4 text-sm text-gray-600">{responseMessage}</div>}
     </div>
   );
+};
+
+FileUpload.propTypes = {
+  token: PropTypes.object.isRequired,
+  question: PropTypes.object.isRequired,
 };
 
 export default FileUpload;

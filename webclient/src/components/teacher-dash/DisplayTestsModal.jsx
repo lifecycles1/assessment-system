@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+import PropTypes from "prop-types";
 import { useEffect, useRef } from "react";
 
 const DisplayTestsModal = ({ isOpen, onClose, responseData, errorMessage }) => {
@@ -67,6 +67,13 @@ const DisplayTestsModal = ({ isOpen, onClose, responseData, errorMessage }) => {
       </div>
     </div>
   );
+};
+
+DisplayTestsModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  responseData: PropTypes.object.isRequired,
+  errorMessage: PropTypes.string,
 };
 
 export default DisplayTestsModal;

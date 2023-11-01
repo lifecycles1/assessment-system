@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+import PropTypes from "prop-types";
 import TeacherAssessments from "./TeacherAssessments";
 
 const TeacherDashboard = ({ token }) => {
@@ -8,6 +8,10 @@ const TeacherDashboard = ({ token }) => {
       <TeacherAssessments />
     </div>
   );
+};
+
+TeacherDashboard.propTypes = {
+  token: PropTypes.object.isRequired,
 };
 
 export default TeacherDashboard;
