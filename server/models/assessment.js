@@ -5,13 +5,24 @@ const commonFields = {
   email: { type: String, required: true },
   status: { type: String, default: "pending" },
   createdAt: { type: Date, default: Date.now },
+  language: { type: String, required: true },
+  question: {
+    id: { type: Number, required: true },
+    name: { type: String, required: true },
+    suggestedTime: { type: String, required: true },
+    difficulty: { type: String, required: true },
+    question: { type: String, required: true },
+    example: { type: String, required: true },
+    inputsOutputs: [
+      {
+        inputs: { type: mongoose.Schema.Types.Mixed },
+        output: { type: mongoose.Schema.Types.Mixed },
+      },
+    ],
+  },
   evaluation: {
     grade: { type: Number },
     feedback: { type: String },
-  },
-  question: {
-    type: mongoose.Schema.Types.Mixed,
-    default: null,
   },
 };
 
@@ -19,16 +30,14 @@ const commonFields = {
 const editorAssessmentSchema = new mongoose.Schema({
   ...commonFields,
   code: { type: String, required: true },
-  language: { type: String, required: true },
 });
 
 // Schema for file assessments
 const fileAssessmentSchema = new mongoose.Schema({
   ...commonFields,
+  fileUrl: { type: String, required: true },
   fileName: { type: String, required: true },
   fileType: { type: String, required: true },
-  language: { type: String, required: true },
-  fileUrl: { type: String, required: true },
 });
 
 // Models

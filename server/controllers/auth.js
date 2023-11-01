@@ -19,7 +19,15 @@ const signup = async (req, res) => {
     // Save the user to the database
     await newUser.save();
     // Generate a JWT token
-    const token = jwt.sign({ id: newUser._id, email: newUser.email, role: newUser.role }, process.env.SECRET_KEY);
+    const token = jwt.sign(
+      {
+        id: newUser._id,
+        email: newUser.email,
+        role: newUser.role,
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7, // datenow in seconds + 7 days
+      },
+      process.env.SECRET_KEY
+    );
     // Send the token to the client
     res.status(201).json({ message: "User created successfully", token });
   } catch (error) {
@@ -41,7 +49,15 @@ const signin = async (req, res) => {
     // If the passwords don't match, return an error
     if (!passwordMatch) return res.status(200).json({ message: "Email or password incorrect" });
     // Generate a JWT token upon successful login
-    const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, process.env.SECRET_KEY);
+    const token = jwt.sign(
+      {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7, // datenow in seconds + 7 days
+      },
+      process.env.SECRET_KEY
+    );
     // Send the token to the client
     res.status(200).json({ message: "Login successful", token });
   } catch (error) {

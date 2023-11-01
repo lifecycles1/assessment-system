@@ -1,24 +1,7 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
-import axios from "axios";
 import AssessmentCard from "../common/AssessmentCard";
 
-const StudentAssessments = ({ token }) => {
-  const [assessments, setAssessments] = useState([]);
-
-  const fetchAssessments = async () => {
-    try {
-      const response = await axios.get(`http://localhost:3000/student-assessments/${token.email}`);
-      setAssessments(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    fetchAssessments();
-  }, [token.email]);
-
+const StudentAssessments = ({ assessments }) => {
   return (
     <div>
       <h2 className="text-2xl text-center font-semibold mb-4">Your Assessments</h2>

@@ -35,6 +35,7 @@ const CodeEditor = ({ token, question }) => {
   };
 
   const submitCode = async () => {
+    setResponseMessage(null);
     const codeToSubmit = selectedLanguage === "javascript" ? javascriptCode : pythonCode;
     const payload = {
       email: token.email,
@@ -72,7 +73,7 @@ const CodeEditor = ({ token, question }) => {
       </div>
       {selectedLanguage === "javascript" && <AceEditor mode={selectedLanguage} theme="monokai" onChange={(newCode) => setJavascriptCode(newCode)} value={javascriptCode} editorProps={{ $blockScrolling: true }} setOptions={{ useWorker: false }} width="100%" height="300px" />}
       {selectedLanguage === "python" && <AceEditor mode={selectedLanguage} theme="monokai" onChange={(newCode) => setPythonCode(newCode)} value={pythonCode} editorProps={{ $blockScrolling: true }} setOptions={{ useWorker: false }} width="100%" height="300px" />}
-      <div className="flex justify-center items-center space-x-12 text-sm border-t border-b border-blue-200 py-1">
+      <div className="flex justify-center items-center space-x-12 text-sm border-t border-b border-blue-200/40 py-1">
         <button onClick={submitCode} className="px-2 py-1 bg-[#23776d] text-white rounded hover:bg-[#14756a]">
           Submit Code
         </button>
@@ -87,9 +88,9 @@ const CodeEditor = ({ token, question }) => {
           </div>
         )}
       </div>
-      {responseMessage && <div className="mt-4 text-sm text-red-400">{responseMessage}</div>}
+      {responseMessage && <div className={`mt-4 text-sm ${responseMessage.includes("successfully") ? "text-[#23776d]" : "text-red-400"}`}>{responseMessage}</div>}
       {testResults && (
-        <div className="px-4 py-2 rounded-b-md border-b border-l border-r border-gray-300 bg-[#272822]">
+        <div className="px-4 py-2 rounded-b-md bg-[#272822]">
           <div className={`font-semibold text-lg mb-2 ${testResults.isCorrect.every((result) => result) ? "text-[#23776d]" : "text-red-400"}`}>{`Tests Passed: ${testResults.isCorrect.filter((result) => result).length}/${testResults.isCorrect.length}`}</div>
           <div className="h-[350px] overflow-y-auto">
             {testResults.inputs.map((input, index) => (
@@ -98,18 +99,18 @@ const CodeEditor = ({ token, question }) => {
                   <div className="font-semibold text-gray-400">Test Case {index + 1}:</div>
                   <div className={`${testResults.isCorrect[index] ? "text-[#46c3b4]" : "text-red-400"}`}>{testResults.isCorrect[index] ? "Passed ✓" : "Wrong answer ✗"}</div>
                 </div>
-                <div className="mb-2 flex white break-all space-x-10">
+                <div className="mb-2 flex break-all space-x-10 text-neutral-200">
                   <div className="flex-1">
-                    <div className={`font-semibold text-neutral-50`}>Input:</div>
-                    <div className="text-neutral-50">{JSON.stringify(input)}</div>
+                    <div className="">Input:</div>
+                    <div className="font-semibold">{JSON.stringify(input)}</div>
                   </div>
                   <div className="flex-1">
-                    <div className={`font-semibold text-neutral-50`}>Output:</div>
-                    <div className="text-neutral-50">{JSON.stringify(testResults.outputs[index])}</div>
+                    <div className="">Output:</div>
+                    <div className="font-semibold">{JSON.stringify(testResults.outputs[index])}</div>
                   </div>
                   <div className="flex-1">
-                    <div className={`font-semibold text-neutral-50`}>Expected Output:</div>
-                    <div className="text-neutral-50">{JSON.stringify(testResults.expectedOutputs[index])}</div>
+                    <div className="">Expected Output:</div>
+                    <div className="font-semibold">{JSON.stringify(testResults.expectedOutputs[index])}</div>
                   </div>
                 </div>
               </div>

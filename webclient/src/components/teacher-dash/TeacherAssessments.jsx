@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import AssessmentCard from "../common/AssessmentCard";
 
-const TeacherAssessments = ({ token }) => {
+const TeacherAssessments = () => {
   const [assessments, setAssessments] = useState([]);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ const TeacherAssessments = ({ token }) => {
       }
     };
     fetchAssessments();
-  }, [token?.role]);
+  }, []);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">

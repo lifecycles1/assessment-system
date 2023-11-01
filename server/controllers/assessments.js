@@ -88,8 +88,6 @@ const markAssessment = async (req, res) => {
     const { assessmentId } = req.params;
     const { type, status, grade, feedback } = req.body;
 
-    console.log("object fields", assessmentId, type, status, grade, feedback);
-
     // Determine the model based on the type
     let AssessmentModel;
     if (type === "file") {
@@ -98,15 +96,13 @@ const markAssessment = async (req, res) => {
       AssessmentModel = EditorAssessment;
     }
 
-    console.log("AssessmentModel", AssessmentModel);
-
     // Find the assessment by ID and update its fields
     await AssessmentModel.findOneAndUpdate({ _id: assessmentId }, { status, "evaluation.grade": grade, "evaluation.feedback": feedback });
 
-    return res.status(200).json({ message: "Assessment updated successfully." });
+    return res.status(200).json();
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Error updating assessment." });
+    return res.status(500).json();
   }
 };
 

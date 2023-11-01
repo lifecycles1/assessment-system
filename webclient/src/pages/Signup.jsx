@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import jwt_decode from "jwt-decode";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -8,13 +9,21 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
   const [error, setError] = useState("");
-  const isAuthenticated = Boolean(localStorage.getItem("token"));
+  const token = localStorage.getItem("token");
+  const isAuthenticated = Boolean(token);
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/dashboard");
+      const decoded = jwt_decode(token);
+      const currentTime = Date.now() / 1000;
+      if (currentTime > decoded.exp) {
+        localStorage.removeItem("token");
+        setError("Session expired. Please login again.");
+      } else {
+        navigate("/dashboard");
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, token]);
 
   const submit = async (e) => {
     e.preventDefault();
