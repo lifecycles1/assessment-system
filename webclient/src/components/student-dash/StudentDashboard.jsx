@@ -20,7 +20,9 @@ const StudentDashboard = ({ token }) => {
 
   useEffect(() => {
     fetchAssessments();
-  }, [token.email]);
+    // unlikely to change, so no dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="relative bg">

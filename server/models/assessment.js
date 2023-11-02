@@ -36,8 +36,6 @@ const editorAssessmentSchema = new mongoose.Schema({
 const fileAssessmentSchema = new mongoose.Schema({
   ...commonFields,
   fileUrl: { type: String, required: true },
-  fileName: { type: String, required: true },
-  fileType: { type: String, required: true },
 });
 
 // Models

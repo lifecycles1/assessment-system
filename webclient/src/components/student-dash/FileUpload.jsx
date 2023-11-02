@@ -26,8 +26,6 @@ const FileUpload = ({ token, question }) => {
     const formData = new FormData();
     formData.append("file", selectedFile);
     formData.append("email", token.email);
-    formData.append("fileName", selectedFile.name);
-    formData.append("fileType", selectedFile.type);
     formData.append("language", selectedFile.name.endsWith(".js") ? "javascript" : "python");
     formData.append("question", JSON.stringify(question));
 
@@ -52,7 +50,7 @@ const FileUpload = ({ token, question }) => {
   return (
     <div className="bg-gray-100 rounded-md p-4 border border-gray-300 mt-4 w-[400px] mx-auto">
       <h3 className="text-lg font-semibold mb-2">Upload your file</h3>
-      <div {...getRootProps()} className={`mb-2 border-2 rounded-md ${getColor(isDragAccept, isDragReject, isFocused)} text-gray-600 ${isDragActive ? "bg-blue-200" : ""}`}>
+      <div {...getRootProps()} className={`mb-2 border-2 hover:border-2 hover:border-dashed hover:border-blue-300 rounded-md ${getColor(isDragAccept, isDragReject, isFocused)} text-gray-600 ${isDragActive ? "bg-blue-200" : ""}`}>
         <input {...getInputProps()} />
         <p>Drag &#39;n&#39; drop a .js or .py file here, or click to select one.</p>
       </div>

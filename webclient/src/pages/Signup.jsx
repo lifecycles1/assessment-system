@@ -18,7 +18,7 @@ const Signup = () => {
       const currentTime = Date.now() / 1000;
       if (currentTime > decoded.exp) {
         localStorage.removeItem("token");
-        setError("Session expired. Please login again.");
+        setError("Session has expired. Please login again.");
       } else {
         navigate("/dashboard");
       }

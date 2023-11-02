@@ -20,8 +20,6 @@ const studentSubmitAssessment = async (req, res) => {
       const [fields, files] = await form.parse(req);
       assessmentData = {
         email: String(fields.email[0]),
-        fileName: String(fields.fileName[0]),
-        fileType: String(fields.fileType[0]),
         language: String(fields.language[0]),
         question: JSON.parse(String(fields.question[0])),
       };
