@@ -10,16 +10,25 @@ exports.jsCode = (req, res) => {
     try {
       const { code, question } = req.body;
 
-      const results = []; // Store results for each input
+      const results = [];
       for (const input of question.inputsOutputs) {
-        const sandbox = { results: null };
+        const sandbox = {
+          results: null,
+          log: [],
+          console: {
+            log: (...args) => {
+              let formattedArgs = args.map((arg) => (typeof arg === "string" ? arg : JSON.stringify(arg)));
+              sandbox.log.push(formattedArgs.join(" "));
+            },
+          },
+        };
         vm.createContext(sandbox);
-        const script = `(function() {
+        const script = `results = (function() {
           ${code}
-          results = solution(${JSON.stringify(input.inputs)});
+          return solution(${JSON.stringify(input.inputs)});
         })()`;
         vm.runInContext(script, sandbox);
-        results.push(sandbox.results);
+        results.push({ results: sandbox.results, log: sandbox.log });
       }
 
       const deepEqual = (a, b) => {
@@ -44,9 +53,10 @@ exports.jsCode = (req, res) => {
 
       const assessmentResult = {
         inputs: question.inputsOutputs.map((input) => input.inputs),
-        outputs: results,
+        outputs: results.map((result) => result.results),
+        logs: results.map((result) => result.log),
         expectedOutputs: question.inputsOutputs.map((input) => input.output),
-        isCorrect: results.map((result, i) => deepEqual(result, question.inputsOutputs[i].output)),
+        isCorrect: results.map((result, i) => deepEqual(result.results, question.inputsOutputs[i].output)),
       };
 
       res.status(200).json(assessmentResult);

@@ -16,7 +16,7 @@ const CodeEditor = ({ token, question }) => {
 
   const runTests = async () => {
     const codeToRun = selectedLanguage === "javascript" ? javascriptCode : pythonCode;
-    const endpoint = selectedLanguage === "javascript" ? "jscode" : "pythonCode";
+    const endpoint = selectedLanguage === "javascript" ? "jsCode" : "pythonCode";
     setResponseMessage(null);
     setTestResults(null);
     try {
@@ -99,6 +99,13 @@ const CodeEditor = ({ token, question }) => {
                   <div className="font-semibold text-gray-400">Test Case {index + 1}:</div>
                   <div className={`${testResults.isCorrect[index] ? "text-[#46c3b4]" : "text-red-400"}`}>{testResults.isCorrect[index] ? "Passed ✓" : "Wrong answer ✗"}</div>
                 </div>
+                {testResults.logs[0].length !== 0 && (
+                  <div className="mb-4 flex flex-col items-center">
+                    <div className="text-gray-400">Console Output:</div>
+                    <div className="text-neutral-200 font-semibold mb-4 whitespace-pre-line break-all">{testResults.logs[index].join("\n")}</div>
+                    <div className="w-48 border-b"></div>
+                  </div>
+                )}
                 <div className="mb-2 flex break-all space-x-10 text-neutral-200">
                   <div className="flex-1">
                     <div className="">Input:</div>

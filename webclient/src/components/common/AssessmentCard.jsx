@@ -45,7 +45,7 @@ const AssessmentCard = ({ listType, assessment, setAssessments }) => {
         const endpoint = language === "javascript" ? "jsFile" : "pythonFile";
         response = await axios.post(`https://europe-west2-code-assessment-401704.cloudfunctions.net/${endpoint}`, { fileUrl: submission, question });
       } else if (type === "code") {
-        const endpoint = language === "javascript" ? "jscode" : "pythonCode";
+        const endpoint = language === "javascript" ? "jsCode" : "pythonCode";
         response = await axios.post(`https://europe-west2-code-assessment-401704.cloudfunctions.net/${endpoint}`, { code: submission, question });
       }
       if (response.data.error) {

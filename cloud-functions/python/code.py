@@ -40,6 +40,7 @@ def python_code(request):
 
         for input_data in question["inputsOutputs"]:
             sandbox_locals = {}
+            sandbox_locals["printed_output"] = []
             
             code_string = (
                 "def execute_user_code():\n"
@@ -48,16 +49,30 @@ def python_code(request):
                 "execute_user_code()"
             )
 
+            def custom_print(*args):
+                formatted_args = []
+                for arg in args:
+                    if isinstance(arg, str):
+                        formatted_args.append(arg)
+                    else:
+                        formatted_args.append(json.dumps(arg))
+                output = " ".join(formatted_args)
+                sandbox_locals["printed_output"].append(output)
+            
+            sandbox_locals['print'] = custom_print
+
             exec(code_string, sandbox_locals)
 
             result = sandbox_locals["res"]
-            results.append(result)
+            printed_output = sandbox_locals["printed_output"]
+            results.append({"result": result, "log": printed_output})
 
         assessment_result = {
             "inputs": [input_data["inputs"] for input_data in question["inputsOutputs"]],
-            "outputs": results,
+            "outputs": [result["result"] for result in results],
             "expectedOutputs": [input_data["output"] for input_data in question["inputsOutputs"]],
-            "isCorrect": [deep_equal(result, input_data["output"]) for result, input_data in zip(results, question["inputsOutputs"])]
+            "isCorrect": [deep_equal(result["result"], input_data["output"]) for result, input_data in zip(results, question["inputsOutputs"])],
+            "logs": [result["log"] for result in results]
         }
 
         headers = {
