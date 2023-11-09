@@ -6,6 +6,7 @@ import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/theme-monokai";
 import AceEditor from "react-ace";
 import axios from "axios";
+import LoadingButton from "../common/LoadingButton";
 
 const CodeEditor = ({ token, question }) => {
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
@@ -13,8 +14,11 @@ const CodeEditor = ({ token, question }) => {
   const [pythonCode, setPythonCode] = useState(`def solution(a):`);
   const [responseMessage, setResponseMessage] = useState(null);
   const [testResults, setTestResults] = useState(null);
+  const [loadingSubmitBtn, setLoadingSubmitBtn] = useState(false);
+  const [loadingTestsBtn, setLoadingBtn] = useState(false);
 
   const runTests = async () => {
+    setLoadingBtn(true);
     const codeToRun = selectedLanguage === "javascript" ? javascriptCode : pythonCode;
     const endpoint = selectedLanguage === "javascript" ? "jsCode" : "pythonCode";
     setResponseMessage(null);
@@ -31,10 +35,13 @@ const CodeEditor = ({ token, question }) => {
       setTestResults(response.data);
     } catch (error) {
       setResponseMessage("Error running tests.");
+    } finally {
+      setLoadingBtn(false);
     }
   };
 
   const submitCode = async () => {
+    setLoadingSubmitBtn(true);
     setResponseMessage(null);
     const codeToSubmit = selectedLanguage === "javascript" ? javascriptCode : pythonCode;
     const payload = {
@@ -49,6 +56,8 @@ const CodeEditor = ({ token, question }) => {
     } catch (error) {
       setResponseMessage("Error submitting code.");
       console.error(error);
+    } finally {
+      setLoadingSubmitBtn(false);
     }
   };
 
@@ -60,7 +69,7 @@ const CodeEditor = ({ token, question }) => {
   };
 
   return (
-    <div className="rounded-md p-4 border border-gray-300 mx-auto w-[600px] bg-[#272822]">
+    <div className="rounded-md p-4 mx-auto w-[600px]">
       <div className="mb-4 -mt-4">
         <div className="flex items-center space-x-4 py-4 -mb-4 text-sm">
           <button onClick={() => setSelectedLanguage("javascript")} className={`px-2 py-1 rounded border border-[#0a0a0a] text-gray-300 ${selectedLanguage === "javascript" ? "bg-[#1a1a1a]" : "bg-[#272822] hover:bg-[#1a1a1a]"}`}>
@@ -74,12 +83,8 @@ const CodeEditor = ({ token, question }) => {
       {selectedLanguage === "javascript" && <AceEditor mode={selectedLanguage} theme="monokai" onChange={(newCode) => setJavascriptCode(newCode)} value={javascriptCode} editorProps={{ $blockScrolling: true }} setOptions={{ useWorker: false }} width="100%" height="300px" />}
       {selectedLanguage === "python" && <AceEditor mode={selectedLanguage} theme="monokai" onChange={(newCode) => setPythonCode(newCode)} value={pythonCode} editorProps={{ $blockScrolling: true }} setOptions={{ useWorker: false }} width="100%" height="300px" />}
       <div className="flex justify-center items-center space-x-12 text-sm border-t border-b border-blue-200/40 py-1">
-        <button onClick={submitCode} className="px-2 py-1 bg-[#23776d] text-white rounded hover:bg-[#14756a]">
-          Submit Code
-        </button>
-        <button onClick={runTests} className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
-          Run Tests
-        </button>
+        <LoadingButton type="button" onClick={submitCode} loading={loadingSubmitBtn} className="w-[97px] px-2 py-1 bg-[#23776d] text-white rounded hover:bg-[#14756a]" text="Submit Code" />
+        <LoadingButton type="button" onClick={runTests} loading={loadingTestsBtn} className="w-[74px] px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600" text="Run Tests" />
         {testResults && (
           <div onClick={scrollToTestResults} className="relative cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#807e7e" className="w-4 -ml-11">

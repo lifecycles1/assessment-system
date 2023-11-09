@@ -1,11 +1,12 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
 
-const TruncateFeedback = ({ text, maxWords }) => {
+const TruncateFeedback = ({ text, maxWords = 80 }) => {
+  const [expanded, setExpanded] = useState(false);
+  if (!text) return null;
   const words = text.split(" ");
   const truncatedText = words.slice(0, maxWords).join(" ");
   const isTruncated = words.length > maxWords;
-  const [expanded, setExpanded] = useState(false);
 
   return (
     <div className="text-sm">
@@ -23,8 +24,8 @@ const TruncateFeedback = ({ text, maxWords }) => {
 };
 
 TruncateFeedback.propTypes = {
-  text: PropTypes.string.isRequired,
-  maxWords: PropTypes.number.isRequired,
+  text: PropTypes.string,
+  maxWords: PropTypes.number,
 };
 
 export default TruncateFeedback;

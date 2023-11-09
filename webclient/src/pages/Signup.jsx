@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import jwt_decode from "jwt-decode";
+import LoadingButton from "../components/common/LoadingButton";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token");
   const isAuthenticated = Boolean(token);
 
@@ -27,6 +29,7 @@ const Signup = () => {
 
   const submit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await axios.post("http://localhost:3000/signup", { email, password, role });
       const { data } = response;
@@ -39,6 +42,8 @@ const Signup = () => {
     } catch (error) {
       setError("An error occurred while creating an account.");
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,9 +69,7 @@ const Signup = () => {
             </select>
           </div>
           <div>
-            <button type="submit" className="w-full px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300">
-              Signup
-            </button>
+            <LoadingButton type="submit" loading={loading} className="w-full px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300" text="Signup" />
           </div>
           {error && <div className="text-red-500 text-center">{error}</div>}
         </form>

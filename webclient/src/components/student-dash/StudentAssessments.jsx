@@ -4,8 +4,8 @@ import AssessmentCard from "../common/AssessmentCard";
 const StudentAssessments = ({ assessments }) => {
   return (
     <div>
-      <h2 className="text-2xl text-center font-semibold mb-4">Your Assessments</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mx-20 border">
+      <h2 className="text-2xl text-center font-semibold mb-4 text-neutral-200">Your Assessments</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mx-20">
         {assessments.map((assessment) => (
           <AssessmentCard key={assessment._id} assessment={assessment} />
         ))}

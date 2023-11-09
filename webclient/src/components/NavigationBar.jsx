@@ -9,7 +9,7 @@ const NavigationBar = () => {
   };
 
   return (
-    <nav className="bg-[#272822] p-4 flex justify-between items-center h-12">
+    <nav className="bg-gradient-to-r from-cyan-500 to-blue-600 p-4 flex justify-between items-center h-12">
       {/* Logo on the left */}
       <div className="text-white text-lg font-semibold">Your Logo</div>
 

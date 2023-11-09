@@ -5,6 +5,7 @@ import DisplayTestsModal from "../teacher-dash/DisplayTestsModal";
 import ViewCodeModal from "./ViewCodeModal";
 import ViewQuestionModal from "./ViewQuestionModal";
 import axios from "axios";
+import LoadingButton from "../common/LoadingButton";
 
 const AssessmentCard = ({ listType, assessment, setAssessments }) => {
   // modal for running tests
@@ -24,6 +25,7 @@ const AssessmentCard = ({ listType, assessment, setAssessments }) => {
   const [responseMessage, setResponseMessage] = useState(null);
   // loading state for "Test" button
   const [loading, setLoading] = useState(false);
+  const [loadingSaveBtn, setLoadingSaveBtn] = useState(false);
 
   const viewCode = (code) => {
     setSelectedCode(code);
@@ -38,7 +40,6 @@ const AssessmentCard = ({ listType, assessment, setAssessments }) => {
   const runTest = async (type, submission, question, language) => {
     setTestResponseMessage(null);
     setLoading(true);
-
     try {
       let response;
       if (type === "file") {
@@ -62,6 +63,17 @@ const AssessmentCard = ({ listType, assessment, setAssessments }) => {
 
   const updateAssessment = async (assessment) => {
     setResponseMessage(null);
+    setLoadingSaveBtn(true);
+
+    // if the teacher marks the assessment as "completed", ask for confirmation
+    if (status === "completed") {
+      const isConfirmed = window.confirm("Are you sure you want to mark this assessment as completed?");
+      if (!isConfirmed) {
+        setLoadingSaveBtn(false);
+        return; // If the user cancels, return out of the function
+      }
+    }
+
     const { _id, fileUrl, evaluation } = assessment;
 
     let type;
@@ -74,8 +86,8 @@ const AssessmentCard = ({ listType, assessment, setAssessments }) => {
     const updatedFields = {
       type,
       status,
-      ...(grade !== undefined && { grade: grade || evaluation.grade }),
-      ...(feedback !== undefined && { feedback: feedback || evaluation.feedback }),
+      ...((grade !== undefined && { grade: grade || evaluation?.grade }) || undefined),
+      ...((feedback !== undefined && { feedback: feedback || evaluation?.feedback }) || undefined),
     };
 
     try {
@@ -87,14 +99,17 @@ const AssessmentCard = ({ listType, assessment, setAssessments }) => {
       else setResponseMessage("Assessment updated.");
     } catch (error) {
       setResponseMessage("Error updating assessment.");
+    } finally {
+      setLoadingSaveBtn(false);
     }
   };
+
   return (
     <>
       {listType === "teacher" ? (
         <>
           <div key={assessment._id} className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:scale-105 mx-4 border border-gray-300">
-            <div className="p-4 border-r relative">
+            <div className="p-4 relative">
               {assessment.fileUrl ? (
                 //  teacher's view of file submissions
                 <>
@@ -106,16 +121,14 @@ const AssessmentCard = ({ listType, assessment, setAssessments }) => {
                     <div className="text-sm">date of submission: {new Date(assessment.createdAt).toLocaleString()}</div>
                     <div className="italic">{assessment.language}</div>
                   </div>
-                  <div className="space-x-4 text-sm">
+                  <div className="space-x-4 text-sm flex">
                     <button onClick={() => window.open(assessment.fileUrl, "_blank")} className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
                       View File
                     </button>
                     <button onClick={() => viewQuestion(assessment.question)} className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
                       View Question
                     </button>
-                    <button onClick={() => runTest("file", assessment.fileUrl, assessment.question, assessment.language)} className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
-                      {loading ? "Testing..." : "Test"}
-                    </button>
+                    <LoadingButton type="button" loading={loading} onClick={() => runTest("file", assessment.fileUrl, assessment.question, assessment.language)} className="w-[40px] px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600" text="Test" />
                   </div>
                 </>
               ) : (
@@ -129,16 +142,14 @@ const AssessmentCard = ({ listType, assessment, setAssessments }) => {
                     <div className="text-sm">date of submission: {new Date(assessment.createdAt).toLocaleString()}</div>
                     <div className="italic">{assessment.language}</div>
                   </div>
-                  <div className="space-x-4 text-sm">
+                  <div className="space-x-4 text-sm flex">
                     <button onClick={() => viewCode(assessment.code)} className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
                       View Code
                     </button>
                     <button onClick={() => viewQuestion(assessment.question)} className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
                       View Question
                     </button>
-                    <button onClick={() => runTest("code", assessment.code, assessment.question, assessment.language)} className="px-2 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600">
-                      {loading ? "Testing..." : "Test"}
-                    </button>
+                    <LoadingButton type="button" loading={loading} onClick={() => runTest("code", assessment.code, assessment.question, assessment.language)} className="w-[40px] px-2 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600" text="Test" />
                   </div>
                 </>
               )}
@@ -162,14 +173,12 @@ const AssessmentCard = ({ listType, assessment, setAssessments }) => {
                     </div>
                     <div>
                       <div className="text-sm font-semibold">Feedback:</div>
-                      <TruncateFeedback text={assessment.evaluation.feedback} maxWords={80} />
+                      <TruncateFeedback text={assessment.evaluation.feedback} />
                     </div>
                   </div>
                 )}
                 {responseMessage && <div className={`text-sm text-end ${responseMessage.startsWith("Error") ? "text-red-500" : "text-green-500"}`}>{responseMessage}</div>}
-                <button onClick={() => updateAssessment(assessment)} className="text-sm px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
-                  Save
-                </button>
+                <LoadingButton type="button" loading={loadingSaveBtn} onClick={() => updateAssessment(assessment)} className="text-sm px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600" text="Save" />
               </div>
             </div>
           </div>
@@ -239,7 +248,7 @@ const AssessmentCard = ({ listType, assessment, setAssessments }) => {
                 </div>
                 <div>
                   <div className="text-sm font-semibold">Feedback:</div>
-                  <TruncateFeedback text={assessment.evaluation.feedback} maxWords={80} />
+                  <TruncateFeedback text={assessment.evaluation.feedback} />
                 </div>
               </div>
             )}

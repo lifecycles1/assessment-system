@@ -18,7 +18,7 @@ const Dashboard = () => {
   if (!token) return null;
 
   return (
-    <div>
+    <div className="bg-[#272822]">
       <NavigationBar />
       {token?.role === "teacher" ? <TeacherDashboard token={token} /> : <StudentDashboard token={token} />}
     </div>

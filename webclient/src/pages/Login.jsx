@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import jwt_decode from "jwt-decode";
+import LoadingButton from "../components/common/LoadingButton";
 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token");
   const isAuthenticated = Boolean(token);
 
@@ -26,6 +28,7 @@ const Login = () => {
 
   const submit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await axios.post("http://localhost:3000/signin", { email, password });
       const { data } = response;
@@ -38,6 +41,8 @@ const Login = () => {
     } catch (error) {
       setError("An error occurred while logging in.");
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,9 +58,7 @@ const Login = () => {
             <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" className="block w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300" />
           </div>
           <div>
-            <button type="submit" className="w-full px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300">
-              Login
-            </button>
+            <LoadingButton type="submit" loading={loading} className="w-full px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300" text="Login" />
           </div>
           {error && <div className="text-red-500 text-center">{error}</div>}
         </form>
