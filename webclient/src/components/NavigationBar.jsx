@@ -25,7 +25,11 @@ const NavigationBar = () => {
             Profile
           </Link>
         </li>
-        {/* Add more navigation routes as needed */}
+        <li>
+          <Link to="/forum/home" className="text-white hover:underline">
+            Forum
+          </Link>
+        </li>
       </ul>
 
       {/* Logout button on the right corner */}

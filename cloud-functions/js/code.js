@@ -1,4 +1,6 @@
 const vm = require("node:vm");
+const process = require("process");
+const { performance } = require("perf_hooks");
 
 exports.jsCode = (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -14,6 +16,10 @@ exports.jsCode = (req, res) => {
       for (const input of question.inputsOutputs) {
         const sandbox = {
           results: null,
+          executionTime: 0,
+          memoryUsage: 0,
+          process,
+          performance,
           log: [],
           console: {
             log: (...args) => {
@@ -23,12 +29,19 @@ exports.jsCode = (req, res) => {
           },
         };
         vm.createContext(sandbox);
-        const script = `results = (function() {
+        const script = `const startTimestamp = performance.now();
+          const startMemoryUsage = process.memoryUsage().heapUsed;
+          results = (function() {
           ${code}
           return solution(${JSON.stringify(input.inputs)});
-        })()`;
+          })();
+          const endTimestamp = performance.now()
+          const endMemoryUsage = process.memoryUsage().heapUsed;
+          executionTime = endTimestamp - startTimestamp;
+          memoryUsage = endMemoryUsage - startMemoryUsage;
+        `;
         vm.runInContext(script, sandbox);
-        results.push({ results: sandbox.results, log: sandbox.log });
+        results.push({ results: sandbox.results, log: sandbox.log, executionTime: sandbox.executionTime, memoryUsage: sandbox.memoryUsage });
       }
 
       const deepEqual = (a, b) => {
@@ -54,6 +67,8 @@ exports.jsCode = (req, res) => {
       const assessmentResult = {
         inputs: question.inputsOutputs.map((input) => input.inputs),
         outputs: results.map((result) => result.results),
+        executionTimes: results.map((result) => result.executionTime),
+        memoryUsages: results.map((result) => result.memoryUsage),
         logs: results.map((result) => result.log),
         expectedOutputs: question.inputsOutputs.map((input) => input.output),
         isCorrect: results.map((result, i) => deepEqual(result.results, question.inputsOutputs[i].output)),

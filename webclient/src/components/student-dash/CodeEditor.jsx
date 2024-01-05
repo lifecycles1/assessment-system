@@ -95,13 +95,33 @@ const CodeEditor = ({ token, question }) => {
       </div>
       {responseMessage && <div className={`mt-4 text-sm ${responseMessage.includes("successfully") ? "text-[#23776d]" : "text-red-400"}`}>{responseMessage}</div>}
       {testResults && (
-        <div className="px-4 py-2 rounded-b-md bg-[#272822]">
+        <div className="px-4 py-2 rounded-b-md bg-gray-800">
           <div className={`font-semibold text-lg mb-2 ${testResults.isCorrect.every((result) => result) ? "text-[#23776d]" : "text-red-400"}`}>{`Tests Passed: ${testResults.isCorrect.filter((result) => result).length}/${testResults.isCorrect.length}`}</div>
           <div className="h-[350px] overflow-y-auto">
             {testResults.inputs.map((input, index) => (
               <div key={index} className="mb-4 border p-4 rounded-md overflow-x-auto">
                 <div className="flex px-4 justify-between">
                   <div className="font-semibold text-gray-400">Test Case {index + 1}:</div>
+                  <div className="flex items-center text-neutral-500">
+                    <span className="mr-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                      </svg>
+                    </span>
+                    {testResults.executionTimes[index].toFixed(3)} ms
+                  </div>
+                  <div className="flex items-center text-neutral-500">
+                    <span className="mr-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z"
+                        />
+                      </svg>
+                    </span>
+                    {(testResults.memoryUsages[index] / 1024 / 1024).toFixed(4)} MB
+                  </div>
                   <div className={`${testResults.isCorrect[index] ? "text-[#46c3b4]" : "text-red-400"}`}>{testResults.isCorrect[index] ? "Passed ✓" : "Wrong answer ✗"}</div>
                 </div>
                 {testResults.logs[0].length !== 0 && (

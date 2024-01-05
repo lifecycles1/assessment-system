@@ -18,6 +18,11 @@ const assessmentRoutes = require("./routes/assessments");
 app.use(authRoutes);
 app.use(question);
 app.use(assessmentRoutes);
+// forum routes
+const topicRoutes = require("./routes/forum/topics");
+const replyRoutes = require("./routes/forum/replies");
+app.use(topicRoutes);
+app.use(replyRoutes);
 
 const PORT = process.env.PORT || 3000;
 
