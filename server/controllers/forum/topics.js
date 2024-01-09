@@ -11,10 +11,10 @@ const createTopic = async (req, res) => {
     });
     await newTopic.incrementUserPostCount(userId);
     await newTopic.save();
-    res.status(201).json(newTopic);
+    return res.status(201).json(newTopic);
   } catch (error) {
     console.error("Error creating topic:", error);
-    res.status(500).json({ message: "Error creating topic" });
+    return res.status(500).json({ message: "Error creating topic" });
   }
 };
 
@@ -25,7 +25,7 @@ const getTopics = async (req, res) => {
     return res.status(200).json(topics);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Error retrieving topics" });
+    return res.status(500).json({ message: "Error retrieving topics" });
   }
 };
 
@@ -47,7 +47,7 @@ const getTopic = async (req, res) => {
     return res.status(200).json(topic);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Error retrieving topic" });
+    return res.status(500).json({ message: "Error retrieving topic" });
   }
 };
 

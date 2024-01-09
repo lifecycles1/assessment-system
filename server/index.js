@@ -21,8 +21,10 @@ app.use(assessmentRoutes);
 // forum routes
 const topicRoutes = require("./routes/forum/topics");
 const replyRoutes = require("./routes/forum/replies");
+const likeRoutes = require("./routes/forum/likes");
 app.use(topicRoutes);
 app.use(replyRoutes);
+app.use(likeRoutes);
 
 const PORT = process.env.PORT || 3000;
 

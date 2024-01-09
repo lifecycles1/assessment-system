@@ -10,6 +10,7 @@ const addReply = async (req, res) => {
     const newReply = new Reply({
       creator: userId,
       message,
+      parentTopicId: topic._id,
       parentMessageId,
       parentMessageCreator,
       parentMessage,
@@ -21,7 +22,7 @@ const addReply = async (req, res) => {
     return res.status(200).json(newReply);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Error adding reply" });
+    return res.status(500).json({ message: "Error adding reply" });
   }
 };
 
