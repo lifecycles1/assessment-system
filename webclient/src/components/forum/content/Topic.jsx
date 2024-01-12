@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import NavigationBar from "../../NavigationBar";
 import SideBar from "../SideBar";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import NewReplyModal from "../modals/NewReplyModal";
 import { updateFeed } from "../../../utils/forum/common";
@@ -116,7 +116,7 @@ const ReplyTile = ({ reply, onReply, userId }) => {
 };
 
 const Topic = () => {
-  const location = useLocation();
+  const routeParams = useParams();
   const navigate = useNavigate();
   const [category, setCategory] = useState(localStorage.getItem("selectedCategory"));
   const [topic, setTopic] = useState({});
@@ -132,25 +132,8 @@ const Topic = () => {
     parentMessageCreatorEmail: null,
     parentMessageCreatorPicture: null,
   });
+  const [startTime] = useState(new Date());
   const [userId, setUserId] = useState("");
-
-  useEffect(() => {
-    const abortController = new AbortController();
-    const fetchTopic = async () => {
-      const { topicId } = location.state;
-      try {
-        const response = await axios.get(`http://localhost:3000/topics/${category}/${topicId}`, {
-          signal: abortController.signal,
-        });
-        setTopic(response.data);
-        setReplies(response.data.replies);
-      } catch (error) {
-        console.error("Error fetching topic:", error);
-      }
-    };
-    fetchTopic();
-    return () => abortController.abort();
-  }, [category, location.state]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -158,6 +141,45 @@ const Topic = () => {
     const userId = decodedToken ? decodedToken.id : "";
     setUserId(userId);
   }, []);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchTopic = async () => {
+      const topicId = routeParams.id;
+      try {
+        const response = await axios.get(`http://localhost:3000/topics/${category}/${topicId}`, {
+          params: { userId },
+        });
+        setTopic(response.data);
+        setReplies(response.data.replies);
+      } catch (error) {
+        console.error("Error fetching topic:", error);
+      }
+    };
+
+    fetchTopic();
+
+    const sendElapsedReadingTime = async () => {
+      const endTime = Date.now();
+      const elapsedTimeInSeconds = Math.floor((endTime - startTime) / 1000);
+      const payload = { time: elapsedTimeInSeconds };
+      try {
+        await axios.put(`http://localhost:3000/profile/${userId}/read-time`, payload);
+      } catch (error) {
+        console.error("Error sending elapsed reading time:", error);
+      }
+    };
+
+    // send elapsed reading time when user "closes tab/refreshes page/goes to a different domain"
+    window.addEventListener("beforeunload", sendElapsedReadingTime);
+
+    return () => {
+      window.removeEventListener("beforeunload", sendElapsedReadingTime);
+      // send elapsed reading time when user "navigates away from the topic page"
+      sendElapsedReadingTime();
+    };
+  }, [category, routeParams.id, startTime, userId]);
 
   const handleCategoryChange = (newCategory) => {
     setCategory(newCategory);
@@ -248,6 +270,7 @@ const calculateTimeDifference = (date) => {
 
   const hoverText = creationDate.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "numeric", hour12: true });
 
+  //
   if (timeDifference < 60 * 1000) {
     return { display: `${minutes}min`, hoverText };
   } else if (timeDifference < 24 * 60 * 60 * 1000) {

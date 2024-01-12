@@ -1,15 +1,17 @@
 const Topic = require("../../models/forum/topic");
+const User = require("../../models/user");
 
 const createTopic = async (req, res) => {
-  const { title, category, message, userId } = req.body;
   try {
+    const { title, category, message, userId } = req.body;
     const newTopic = new Topic({
       creator: userId,
       title,
       message,
       category,
     });
-    await newTopic.incrementUserPostCount(userId);
+    const user = await User.findById(userId);
+    if (user) await user.incrementPostCount();
     await newTopic.save();
     return res.status(201).json(newTopic);
   } catch (error) {
@@ -44,6 +46,8 @@ const getTopic = async (req, res) => {
       });
 
     topic.incrementViews();
+    const user = await User.findById(req.query.userId);
+    if (user) user.incrementTopicsViewed(req.params.id);
     return res.status(200).json(topic);
   } catch (error) {
     console.log(error);

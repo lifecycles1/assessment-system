@@ -20,7 +20,7 @@ const Dashboard = () => {
   return (
     <div className="bg-gray-800">
       <NavigationBar />
-      {token?.role === "teacher" ? <TeacherDashboard token={token} /> : <StudentDashboard token={token} />}
+      <div className="h-[calc(100vh-3rem)] overflow-y-auto">{token?.role === "teacher" ? <TeacherDashboard token={token} /> : <StudentDashboard token={token} />}</div>
     </div>
   );
 };

@@ -1,0 +1,58 @@
+import { useOutletContext } from "react-router-dom";
+import heartSolid from "../../../assets/heart-solid.svg";
+
+const Summary = () => {
+  const userData = useOutletContext();
+  console.log("userData", userData);
+  return (
+    <div>
+      <div className="text-xl font-semibold py-6">STATS</div>
+      <div className="grid grid-cols-5 gap-4">
+        <div className="flex items-center space-x-1">
+          <div className="text-xl font-semibold">{userData.daysVisited.length}</div>
+          <div className="text-gray-500">days visited</div>
+        </div>
+        <div className="flex items-center space-x-1">
+          <div className="text-xl font-semibold">{formatReadTime(userData.readTime)}</div>
+          <div className="text-gray-500">read time</div>
+        </div>
+        <div className="flex items-center space-x-1">
+          <div className="text-xl font-semibold">{userData.topicsViewed.length}</div>
+          <div className="text-gray-500">topics viewed</div>
+        </div>
+        <div className="flex items-center space-x-1">
+          <div className="text-xl font-semibold">{userData.likesGiven}</div>
+          <img src={heartSolid} alt="Likes" className="w-5 h-5 mt-0.5" />
+          <div className="text-gray-500">given</div>
+        </div>
+        <div className="flex items-center space-x-1">
+          <div className="text-xl font-semibold">{userData.likesReceived}</div>
+          <img src={heartSolid} alt="Likes" className="w-5 h-5 mt-0.5" />
+          <div className="text-gray-500">received</div>
+        </div>
+        <div className="flex items-center space-x-1">
+          <div className="text-xl font-semibold">{userData.topics.length}</div>
+          <div className="text-gray-500">topics created</div>
+        </div>
+        <div className="flex items-center space-x-1">
+          <div className="text-xl font-semibold">{userData.replies.length}</div>
+          <div className="text-gray-500">posts created</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const formatReadTime = (seconds) => {
+  if (seconds < 60) {
+    return "0min";
+  } else if (seconds < 3600) {
+    const minutes = Math.floor(seconds / 60);
+    return `${minutes}min`;
+  } else {
+    const hours = Math.floor(seconds / 3600);
+    return `${hours}h`;
+  }
+};
+
+export default Summary;

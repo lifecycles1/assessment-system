@@ -9,7 +9,7 @@ const TopicTile = ({ topic }) => {
   return (
     <div className="flex items-center border-b border-gray-200">
       <div className="w-[560px] h-[85px] flex flex-col justify-center mr-20">
-        <Link to={`/forum/${topic.category}/t/${topic._id}`} state={{ topicId: topic._id }} className="text-lg">
+        <Link to={`${topic.category}/t/${topic._id}`} className="text-lg">
           {topic.title.substring(0, 115)}...
         </Link>
         <div className="text-sm">{topic.category}</div>

@@ -23,6 +23,7 @@ const signup = async (req, res) => {
       {
         id: newUser._id,
         email: newUser.email,
+        createdAt: newUser.createdAt,
         role: newUser.role,
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7, // datenow in seconds + 7 days
       },
@@ -53,6 +54,7 @@ const signin = async (req, res) => {
       {
         id: user._id,
         email: user.email,
+        createdAt: user.createdAt,
         role: user.role,
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7, // datenow in seconds + 7 days
       },

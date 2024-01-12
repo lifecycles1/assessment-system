@@ -22,9 +22,11 @@ app.use(assessmentRoutes);
 const topicRoutes = require("./routes/forum/topics");
 const replyRoutes = require("./routes/forum/replies");
 const likeRoutes = require("./routes/forum/likes");
+const profileRoutes = require("./routes/forum/profile");
 app.use(topicRoutes);
 app.use(replyRoutes);
 app.use(likeRoutes);
+app.use(profileRoutes);
 
 const PORT = process.env.PORT || 3000;
 

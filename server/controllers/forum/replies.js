@@ -1,5 +1,6 @@
 const Topic = require("../../models/forum/topic");
 const { Reply } = require("../../models/forum/reply");
+const User = require("../../models/user");
 
 const addReply = async (req, res) => {
   try {
@@ -16,7 +17,8 @@ const addReply = async (req, res) => {
       parentMessage,
     });
     topic.replies.push(newReply);
-    await topic.incrementUserReplyCount(userId);
+    const user = await User.findById(userId);
+    if (user) await user.incrementReplyCount();
     await Promise.all([topic.save(), newReply.save()]);
     await newReply.populate({ path: "creator", select: "email picture" });
     return res.status(200).json(newReply);

@@ -23,8 +23,8 @@ const NavigationBar = () => {
   const ProfileDropdown = () => {
     return (
       <div className="absolute right-0 top-0 mt-12 w-48 bg-white rounded-md overflow-hidden shadow-xl z-10">
-        <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">
-          Your Profile
+        <Link to={`/forum/u/${token.id}/summary`} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">
+          Profile
         </Link>
         <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">
           Settings
@@ -46,11 +46,6 @@ const NavigationBar = () => {
         <li>
           <Link to="/dashboard" className="text-white hover:underline">
             Dashboard
-          </Link>
-        </li>
-        <li>
-          <Link to="/profile" className="text-white hover:underline">
-            Profile
           </Link>
         </li>
         <li>

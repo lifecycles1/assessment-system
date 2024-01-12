@@ -23,8 +23,8 @@ const CodeSubmission = ({ token }) => {
   }, []);
 
   return (
-    <div className="p-4 -mt-10">
-      <h2 className="text-xl font-semibold mb-4 ml-96 text-center text-neutral-200">Code Submission</h2>
+    <div className="p-4">
+      {/* <h2 className="text-xl font-semibold mb-4 ml-96 text-center text-neutral-200">Code Submission</h2> */}
       <div className="mb-4">
         <div className="flex items-center justify-center ml-96 text-sm">
           <button onClick={() => setUseCodeEditor(true)} className={`mr-4 px-2 py-1 rounded ${useCodeEditor ? "bg-blue-600 text-white" : "bg-blue-200 text-gray-600 hover:bg-blue-500 hover:text-gray-200"}`}>

@@ -1,43 +1,15 @@
 const mongoose = require("mongoose");
+const User = require("../user");
 
 const replySchema = new mongoose.Schema({
-  creator: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  message: {
-    type: String,
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  parentTopicId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: "Topic",
-  },
-  parentMessageId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-  },
-  parentMessageCreator: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  parentMessage: {
-    type: String,
-    required: true,
-  },
-  likes: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
+  creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  message: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  parentTopicId: { type: mongoose.Schema.Types.ObjectId, ref: "Topic", required: true },
+  parentMessageId: { type: mongoose.Schema.Types.ObjectId, required: true },
+  parentMessageCreator: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  parentMessage: { type: String, required: true },
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
 replySchema.methods.toggleLike = async function (userId) {
@@ -45,9 +17,17 @@ replySchema.methods.toggleLike = async function (userId) {
   if (likeIndex !== -1) {
     // User has already liked, remove the like
     this.likes.splice(likeIndex, 1);
+    // Decrement the user's likesGiven count
+    await User.updateOne({ _id: userId }, { $inc: { likesGiven: -1 } });
+    // Decrement the reply's creator's likesReceived count
+    await User.updateOne({ _id: this.creator }, { $inc: { likesReceived: -1 } });
   } else {
     // User hasn't liked, add a new like
     this.likes.push(userId);
+    // Increment the user's likesGiven count
+    await User.updateOne({ _id: userId }, { $inc: { likesGiven: 1 } });
+    // Increment the reply's creator's likesReceived count
+    await User.updateOne({ _id: this.creator }, { $inc: { likesReceived: 1 } });
   }
   await this.save();
 
