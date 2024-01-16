@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import NewReplyModal from "../modals/NewReplyModal";
-import { updateFeed } from "../../../utils/forum/common";
+import { updateFeed, calculateTimeDifference } from "../../../utils/forum/common";
 import leftArrow from "../../../assets/left-arrow.svg";
 import heartOutline from "../../../assets/heart-outline.svg";
 import jwt_decode from "jwt-decode";
@@ -90,7 +90,7 @@ const ReplyTile = ({ reply, onReply, userId }) => {
   const [likes, setLikes] = useState(reply.likes);
 
   return (
-    <div className="flex space-x-4 pr-20 w-full">
+    <div id={reply._id} className="flex space-x-4 pr-20 w-full">
       <img src={reply.creator.picture || "https://via.placeholder.com/40"} alt="User" className="mt-3.5 w-10 h-10 rounded-full" />
       <div className="my-5 w-full">
         <p className="text-gray-400 font-semibold">{reply.creator.email}</p>
@@ -181,6 +181,19 @@ const Topic = () => {
     };
   }, [category, routeParams.id, startTime, userId]);
 
+  useEffect(() => {
+    if (replies.length === 0) return;
+    const scrollTo = new URLSearchParams(location.search).get("scrollTo");
+    if (scrollTo) {
+      const element = document.getElementById(scrollTo);
+      if (element) {
+        element.scrollIntoView({ behavior: "instant", block: "center" });
+        element.children[1].classList.add("flash-background");
+        setTimeout(() => element.children[1].classList.remove("flash-background"), 700);
+      }
+    }
+  }, [replies]);
+
   const handleCategoryChange = (newCategory) => {
     setCategory(newCategory);
     localStorage.setItem("selectedCategory", newCategory);
@@ -255,31 +268,6 @@ ReplyTile.propTypes = {
   reply: PropTypes.object,
   onReply: PropTypes.func,
   userId: PropTypes.string,
-};
-
-const monthAbbreviations = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-const calculateTimeDifference = (date) => {
-  const currentDate = new Date();
-  const creationDate = new Date(date);
-  const timeDifference = currentDate - creationDate;
-
-  const minutes = Math.floor(timeDifference / (1000 * 60));
-  const hours = Math.floor(timeDifference / (1000 * 60 * 60));
-  const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-
-  const hoverText = creationDate.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "numeric", hour12: true });
-
-  //
-  if (timeDifference < 60 * 1000) {
-    return { display: `${minutes}min`, hoverText };
-  } else if (timeDifference < 24 * 60 * 60 * 1000) {
-    return { display: `${hours}hr`, hoverText };
-  } else if (timeDifference < 30 * 24 * 60 * 60 * 1000) {
-    return { display: `${days}d`, hoverText };
-  } else {
-    return { display: monthAbbreviations[creationDate.getMonth()] + " '" + (creationDate.getFullYear() % 100), hoverText };
-  }
 };
 
 const handleLike = async (type, messageId, setLikes, userId) => {

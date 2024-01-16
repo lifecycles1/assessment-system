@@ -8,6 +8,11 @@ const getProfile = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
     const topics = await Topic.find({ creator: user._id });
     const replies = await Reply.find({ creator: user._id });
+
+    // populate the 2 most recent replies' parentTopicId fields with the topic's title and category
+    // for display on the user profile page (Summary tab)
+    await Promise.all(replies.slice(-2).map(async (reply) => await reply.populate({ path: "parentTopicId", select: "title category" })));
+
     const userProfile = {
       _id: user._id,
       createdAt: user.createdAt,

@@ -26,3 +26,9 @@
   scrollbar-width: thin;
   scrollbar-color: #888 transparent;
 }
+
+.flash-background {
+  background-color: rgba(245, 188, 188, 0.6);
+  transition: background-color 0.5s ease-in-out;
+  border-radius: 0.25rem;
+}

@@ -1,8 +1,10 @@
-import { useOutletContext } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import heartSolid from "../../../assets/heart-solid.svg";
+import { calculateTimeDifference } from "../../../utils/forum/common";
 
 const Summary = () => {
   const userData = useOutletContext();
+  const lastTwoReplies = userData.replies.slice(-2).reverse();
   console.log("userData", userData);
   return (
     <div>
@@ -39,16 +41,35 @@ const Summary = () => {
           <div className="text-gray-500">posts created</div>
         </div>
       </div>
+      <div className="grid grid-cols-2 gap-4 pt-16">
+        <div>
+          <div className="text-xl font-semibold">TOP REPLIES</div>
+          <ul>
+            {lastTwoReplies.map((reply) => (
+              <li key={reply._id} className="mt-3 pl-2 py-2 border-l-2 border-gray-200">
+                <div className="text-gray-500">{calculateTimeDifference(reply.createdAt).display}</div>
+                <Link className="text-[17px]" to={`/forum/${reply.parentTopicId.category}/t/${reply.parentTopicId._id}?scrollTo=${reply._id}`}>
+                  {reply.parentTopicId.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <div className="text-xl font-semibold">TOP TOPICS</div>
+          <div></div>
+        </div>
+      </div>
     </div>
   );
 };
 
 const formatReadTime = (seconds) => {
   if (seconds < 60) {
-    return "0min";
+    return "0m";
   } else if (seconds < 3600) {
     const minutes = Math.floor(seconds / 60);
-    return `${minutes}min`;
+    return `${minutes}m`;
   } else {
     const hours = Math.floor(seconds / 3600);
     return `${hours}h`;
