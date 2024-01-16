@@ -108,7 +108,7 @@ const AssessmentCard = ({ listType, assessment, setAssessments }) => {
     <>
       {listType === "teacher" ? (
         <>
-          <div key={assessment._id} className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:scale-105 mx-4 border border-gray-300">
+          <div className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:scale-105 mx-4 border border-gray-300">
             <div className="p-4 relative">
               {assessment.fileUrl ? (
                 //  teacher's view of file submissions
@@ -189,7 +189,7 @@ const AssessmentCard = ({ listType, assessment, setAssessments }) => {
       ) : (
         // listType === "student"
         <>
-          <div key={assessment._id} className="bg-white border-r rounded-lg shadow-lg p-4 hover:shadow-xl transition-transform transform hover:scale-105">
+          <div className="bg-white border-r rounded-lg shadow-lg p-4 hover:shadow-xl transition-transform transform hover:scale-105">
             {assessment.fileUrl ? (
               // student's view of file submissions
               <div className="block">

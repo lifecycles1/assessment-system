@@ -1,42 +1,76 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import AssessmentCard from "../common/AssessmentCard";
 
 const TeacherAssessments = () => {
+  // // pagination
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const itemsPerPage = 4;
+  // const indexOfLastItem = currentPage * itemsPerPage;
+  // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  // const currentAssessments = assessments.slice(indexOfFirstItem, indexOfLastItem);
+  // const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  // const maxPageButtonsToShow = 5;
+  // const startPage = Math.max(1, currentPage - Math.floor(maxPageButtonsToShow / 2));
+  // const endPage = Math.min(startPage + maxPageButtonsToShow - 1, Math.ceil(assessments.length / itemsPerPage));
+  // const pageButtons = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
   const [assessments, setAssessments] = useState([]);
-  // pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4;
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentAssessments = assessments.slice(indexOfFirstItem, indexOfLastItem);
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-  const maxPageButtonsToShow = 5;
-  const startPage = Math.max(1, currentPage - Math.floor(maxPageButtonsToShow / 2));
-  const endPage = Math.min(startPage + maxPageButtonsToShow - 1, Math.ceil(assessments.length / itemsPerPage));
-  const pageButtons = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const loaderRef = useRef(null);
 
   useEffect(() => {
     // Fetch all student's assessments with a "pending" status
     const fetchAssessments = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/teacher-assessments");
-        setAssessments(response.data);
+        const response = await axios.get(`http://localhost:3000/teacher-assessments?page=${page}`);
+        if (response.data.length > 0) {
+          // instead of normally spreading the response data with prev, we filter out any duplicates
+          // because of the double execution of useEffect in StrictMode on initial render
+          setAssessments((prev) => [...prev, ...response.data.filter((assessment) => !prev.some((prevAssessment) => prevAssessment._id === assessment._id))]);
+        } else {
+          setHasMore(false);
+        }
       } catch (error) {
         console.error(error);
       }
     };
+
     fetchAssessments();
-  }, []);
+  }, [page]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      { threshold: 1 }
+    );
+
+    const currentLoaderRef = loaderRef.current;
+
+    if (currentLoaderRef) observer.observe(currentLoaderRef);
+
+    return () => {
+      if (currentLoaderRef) observer.unobserve(currentLoaderRef);
+    };
+  }, [hasMore]);
 
   return (
     <div className="pb-10">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
-        {currentAssessments.map((assessment) => (
+        {assessments.map((assessment) => (
           <AssessmentCard key={assessment._id} listType="teacher" assessment={assessment} setAssessments={setAssessments} />
         ))}
       </div>
-      <div className="flex justify-center items-center space-x-3 mt-10">
+      {hasMore && (
+        <div ref={loaderRef} className="flex justify-center items-center mt-10">
+          <div className="w-6 h-6 border-t-2 border-gray-200 animate-spin rounded-full"></div>
+        </div>
+      )}
+      {/* <div className="flex justify-center items-center space-x-3 mt-10">
         <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} className="text-2xl text-neutral-200">
           &#8592;
         </button>
@@ -48,7 +82,7 @@ const TeacherAssessments = () => {
         <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === Math.ceil(assessments.length / itemsPerPage)} className="text-2xl text-neutral-200">
           &#8594;
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
