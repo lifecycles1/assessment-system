@@ -31,6 +31,7 @@ const TopicTile = ({ topic }) => {
 const TopicList = ({ category }) => {
   const [topics, setTopics] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sortOrder, setSortOrder] = useState("desc");
 
   useEffect(() => {
     if (!category) return;
@@ -45,6 +46,27 @@ const TopicList = ({ category }) => {
     fetchTopics();
   }, [category]);
 
+  const sortTopics = (type) => {
+    // toggle sort order (type === "latest" is not toggleable)
+    if (type !== "latest") setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
+    const sortedTopics = [...topics];
+    // sort topics based on criteria
+    if (type === "replyCount") {
+      sortedTopics.sort((a, b) => {
+        if (sortOrder === "desc") return b.replies.length - a.replies.length;
+        else return a.replies.length - b.replies.length;
+      });
+    } else if (type === "views") {
+      sortedTopics.sort((a, b) => {
+        if (sortOrder === "desc") return b.views - a.views;
+        else return a.views - b.views;
+      });
+    } else if (type === "latest") {
+      sortedTopics.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+    setTopics(sortedTopics);
+  };
+
   return (
     <div className="mt-8 p-5">
       <div className="flex justify-between mt-8 mb-4 items-center">
@@ -54,7 +76,9 @@ const TopicList = ({ category }) => {
             <button className="border border-gray-400 px-4 py-2 transition transform hover:scale-105">all tags</button>
           </div>
           <div className="space-x-2 ml-5">
-            <button className="border border-gray-400 px-4 py-2 transition transform hover:scale-105">Latest</button>
+            <button onClick={() => sortTopics("latest")} className="border border-gray-400 px-4 py-2 transition transform hover:scale-105">
+              Latest
+            </button>
             <button className="border border-gray-400 px-4 py-2 transition transform hover:scale-105">Top</button>
           </div>
         </div>
@@ -65,8 +89,9 @@ const TopicList = ({ category }) => {
       <div className="flex justify-between items-center border-b border-gray-200 text-lg text-gray-600">
         <div>Topic</div>
         <div className="flex space-x-10 mr-[15px]">
-          <div>Replies</div>
-          <div>Views</div>
+          <div onClick={() => sortTopics("replyCount")}>Replies</div>
+          <div onClick={() => sortTopics("views")}>Views</div>
+          <div>Activity</div>
         </div>
       </div>
       {topics.map((topic) => (

@@ -4,15 +4,19 @@ const User = require("../../models/user");
 const createTopic = async (req, res) => {
   try {
     const { title, category, message, userId } = req.body;
+
     const newTopic = new Topic({
       creator: userId,
       title,
       message,
       category,
     });
+
     const user = await User.findById(userId);
     if (user) await user.incrementPostCount();
+
     await newTopic.save();
+
     return res.status(201).json(newTopic);
   } catch (error) {
     console.error("Error creating topic:", error);
@@ -22,8 +26,9 @@ const createTopic = async (req, res) => {
 
 const getTopics = async (req, res) => {
   try {
-    const categoryFilter = req.params.category ? { category: req.params.category } : {};
-    const topics = await Topic.find(categoryFilter);
+    // no filter when category is "home", otherwise filter by category.
+    const categoryFilter = req.params.category !== "home" ? { category: req.params.category } : {};
+    const topics = await Topic.find(categoryFilter).sort({ createdAt: -1 });
     return res.status(200).json(topics);
   } catch (error) {
     console.log(error);
@@ -36,18 +41,14 @@ const getTopic = async (req, res) => {
     const topic = await Topic.findById(req.params.id)
       // populate the Topic's creator field with the creator's email and picture,
       // then populate the replies' creator fields with the repliers' email and picture
-      .populate({
-        path: "creator",
-        select: "email picture",
-      })
-      .populate({
-        path: "replies.creator",
-        select: "email picture",
-      });
+      .populate({ path: "creator", select: "email picture" })
+      .populate({ path: "replies.creator", select: "email picture" });
 
     topic.incrementViews();
+
     const user = await User.findById(req.query.userId);
     if (user) user.incrementTopicsViewed(req.params.id);
+
     return res.status(200).json(topic);
   } catch (error) {
     console.log(error);
