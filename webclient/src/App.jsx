@@ -14,6 +14,9 @@ import Summary from "./components/forum/profile/Summary";
 import Activity from "./components/forum/profile/Activity";
 import Badges from "./components/forum/profile/Badges";
 import Preferences from "./components/forum/profile/Preferences";
+import LearningPaths from "./components/student-dash/LearningPaths";
+import LearningPath from "./components/student-dash/LearningPath";
+import Challenge from "./components/student-dash/Challenge";
 
 function App() {
   const [token, setToken] = useState(null);
@@ -46,6 +49,9 @@ function App() {
         <Route path="signup" element={<Signup />} />
         <Route element={<PrivateRoutes />}>
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="dashboard/lp" element={<LearningPaths />} />
+          <Route path="dashboard/lp/:pathTitle" element={<LearningPath />} />
+          <Route path="dashboard/lp/:pathTitle/:challengeTitle" element={<Challenge />} />
           <Route path="forum" element={<Forum />}>
             <Route path=":category" element={<Main />} />
           </Route>

@@ -27,6 +27,9 @@ app.use(topicRoutes);
 app.use(replyRoutes);
 app.use(likeRoutes);
 app.use(profileRoutes);
+// learning paths routes
+const learningPathsRoutes = require("./routes/learningPaths");
+app.use(learningPathsRoutes);
 
 const PORT = process.env.PORT || 3000;
 

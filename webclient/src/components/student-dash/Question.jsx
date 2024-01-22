@@ -5,7 +5,7 @@ const Question = ({ question }) => {
   return (
     <div className="p-4">
       <div className="flex justify-between">
-        <div className="font-bold italic ml-4">{question.name}</div>
+        <div className="font-bold italic ml-4">{question.title}</div>
         <div className="flex mr-4 space-x-3 text-sm">
           <div className="flex space-x-1">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="#34a194" className="w-5">

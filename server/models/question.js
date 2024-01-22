@@ -1,7 +1,7 @@
 const questions = [
   {
     id: 1,
-    name: "First Duplicate",
+    title: "First Duplicate",
     suggestedTime: "15 mins",
     difficulty: "Easy",
     question: `Given an array a that contains only numbers in the range\nfrom 1 to a.length, find the first duplicate number\nfor which the second occurrence has the minimal index.\nIn other words, if there are more than 1 duplicated numbers,\nreturn the number for which the second occurrence has a smaller\nindex than the second occurrence of the other number does.\nIf there are no such elements, return -1.`,
@@ -23,7 +23,7 @@ const questions = [
   },
   {
     id: 2,
-    name: "Rotate Image",
+    title: "Rotate Image",
     suggestedTime: "15 mins",
     difficulty: "Easy",
     question: `You are given an n x n 2D matrix that represents an image.\nRotate the image by 90 degrees (clockwise).`,
@@ -87,7 +87,7 @@ const questions = [
   },
   {
     id: 3,
-    name: "First Non-Repeating Character",
+    title: "First Non-Repeating Character",
     suggestedTime: "15 mins",
     difficulty: "Easy",
     question: `Given a string s consisting of small English letters,\nfind and return the first instance of a non-repeating character\nin it. If there is no such character, return '_'.`,
@@ -109,7 +109,7 @@ const questions = [
   },
   {
     id: 4,
-    name: "Climbing Stairs",
+    title: "Climbing Stairs",
     suggestedTime: "15 mins",
     difficulty: "Easy",
     question: `You are climbing a staircase that has n steps. You can take\nthe steps either 1 or 2 at a time. Calculate how many distinct\nways you can climb to the top of the staircase.`,
@@ -131,7 +131,7 @@ const questions = [
   },
   {
     id: 5,
-    name: "Maximal Square",
+    title: "Maximal Square",
     suggestedTime: "45 mins",
     difficulty: "Hard",
     question: `You have a 2D binary matrix that's filled with 0s and 1s.\nIn the matrix, find the largest square that contains only 1s\nand return its area.`,
@@ -171,7 +171,7 @@ const questions = [
   },
   {
     id: 6,
-    name: "Longest Increasing Subsequence",
+    title: "Longest Increasing Subsequence",
     suggestedTime: "45 mins",
     difficulty: "Hard",
     question: `Given a sequence of numbers in an array, find the length of its\nlongest increasing subsequence (LIS).\nThe longest increasing subsequence is a subsequence of a given\nsequence in which the subsequence's elements are in strictly\nincreasing order, and in which the subsequence is as long as\npossible. This subsequence is not necessarily contiguous or unique.`,
@@ -193,7 +193,7 @@ const questions = [
   },
   {
     id: 7,
-    name: "Contains Duplicates",
+    title: "Contains Duplicates",
     suggestedTime: "15 mins",
     difficulty: "Easy",
     question: `Given an array of integers, write a function that determines\nwhether the array contains any duplicates. Your function should\nreturn true if any element appears at least twice in the array,\nand it should return false if every element is distinct.`,
@@ -215,7 +215,7 @@ const questions = [
   },
   {
     id: 8,
-    name: "Ammend The Sentence",
+    title: "Ammend The Sentence",
     suggestedTime: "15 mins",
     difficulty: "Easy",
     question: `You have been given a string s, which is supposed to be a sentence.\nHowever, someone forgot to put spaces between the different words,\nand for some reason they capitalized the first letter of every word.\nReturn the sentence after making the following amendments:\n\n- Put a single space between the words.\n- Convert the uppercase letters to lowercase.`,
@@ -237,7 +237,7 @@ const questions = [
   },
   {
     id: 9,
-    name: "Bubble Sort",
+    title: "Bubble Sort",
     suggestedTime: "15 mins",
     difficulty: "Easy",
     question: `Given an array of integers, sort it using the bubble sort algorithm.`,
@@ -259,7 +259,7 @@ const questions = [
   },
   {
     id: 10,
-    name: "Merge Sort",
+    title: "Merge Sort",
     suggestedTime: "15 mins",
     difficulty: "Easy",
     question: `Sort an array of integers using the merge sort algorithm.`,
@@ -279,11 +279,79 @@ const questions = [
       },
     ],
   },
+  {
+    id: 11,
+    title: "Sudoku 2",
+    suggestedTime: "30 mins",
+    difficulty: "Easy",
+    question: `Sudoku is a number-placement puzzle. The objective is to fill a 9 × 9 grid\nwith numbers in such a way that each column, each row, and each of the\nnine 3 × 3 sub-grids that compose the grid all contain all of the numbers\nfrom 1 to 9 one time. Implement an algorithm that will check whether the\ngiven grid of numbers represents a valid Sudoku puzzle according to the\nlayout rules described above. Note that the puzzle represented by grid does\nnot have to be solvable.`,
+    example: `For grid = [['.', '.', '.', '1', '4', '.', '.', '2', '.'],
+            ['.', '.', '6', '.', '.', '.', '.', '.', '.'],
+            ['.', '.', '.', '.', '.', '.', '.', '.', '.'],
+            ['.', '.', '1', '.', '.', '.', '.', '.', '.'],
+            ['.', '6', '7', '.', '.', '.', '.', '.', '9'],
+            ['.', '.', '.', '.', '.', '.', '8', '1', '.'],
+            ['.', '3', '.', '.', '.', '.', '.', '.', '6'],
+            ['.', '.', '.', '.', '.', '7', '.', '.', '.'],
+            ['.', '.', '.', '5', '.', '.', '.', '7', '.']] \n\nthe output should be\nsolution(grid) = true;\n\nFor grid = [['.', '.', '.', '.', '2', '.', '.', '9', '.'],
+            ['.', '.', '.', '.', '6', '.', '.', '.', '.'],
+            ['7', '1', '.', '.', '7', '5', '.', '.', '.'],
+            ['.', '7', '.', '.', '.', '.', '.', '.', '.'],
+            ['.', '.', '.', '.', '8', '3', '.', '.', '.'],
+            ['.', '.', '8', '.', '.', '7', '.', '6', '.'],
+            ['.', '.', '.', '.', '.', '2', '.', '.', '.'],
+            ['.', '1', '.', '2', '.', '.', '.', '.', '.'],
+            ['.', '2', '.', '.', '3', '.', '.', '.', '.']] \n\nthe output should be\nsolution(grid) = false.\nThe given grid is not correct because there are two 1s in the second column.\nEach column, each row, and each 3 × 3 subgrid can only contain the numbers\n1 through 9 one time.`,
+    inputsOutputs: [
+      {
+        inputs: [
+          [".", ".", "4", ".", ".", ".", "6", "3", "."],
+          [".", ".", ".", ".", ".", ".", ".", ".", "."],
+          ["5", ".", ".", ".", ".", ".", ".", "9", "."],
+          [".", ".", ".", "5", "6", ".", ".", ".", "."],
+          ["4", ".", "3", ".", ".", ".", ".", ".", "1"],
+          [".", ".", ".", "7", ".", ".", ".", ".", "."],
+          [".", ".", ".", "5", ".", ".", ".", ".", "."],
+          [".", ".", ".", ".", ".", ".", ".", ".", "."],
+          [".", ".", ".", ".", ".", ".", ".", ".", "."],
+        ],
+        output: false,
+      },
+      {
+        inputs: [
+          [".", ".", ".", ".", ".", ".", ".", ".", "2"],
+          [".", ".", ".", ".", ".", ".", "6", ".", "."],
+          [".", ".", "1", "4", ".", ".", "8", ".", "."],
+          [".", ".", ".", ".", ".", ".", ".", ".", "."],
+          [".", ".", ".", ".", ".", ".", ".", ".", "."],
+          [".", ".", ".", ".", "3", ".", ".", ".", "."],
+          ["5", ".", "8", "6", ".", ".", ".", ".", "."],
+          [".", "9", ".", ".", ".", ".", "4", ".", "."],
+          [".", ".", ".", ".", "5", ".", ".", ".", "."],
+        ],
+        output: true,
+      },
+      {
+        inputs: [
+          [".", "9", ".", ".", "4", ".", ".", ".", "."],
+          ["1", ".", ".", ".", ".", ".", "6", ".", "."],
+          [".", ".", "3", ".", ".", ".", ".", ".", "."],
+          [".", ".", ".", ".", ".", ".", ".", ".", "."],
+          [".", ".", ".", "7", ".", ".", ".", ".", "."],
+          ["3", ".", ".", ".", "5", ".", ".", ".", "."],
+          [".", ".", "7", ".", ".", "4", ".", ".", "."],
+          [".", ".", ".", ".", ".", ".", ".", ".", "."],
+          [".", ".", ".", ".", "7", ".", ".", ".", "."],
+        ],
+        output: true,
+      },
+    ],
+  },
 ];
 
 module.exports = {
   getRandomQuestion: () => {
     const randomIndex = Math.floor(Math.random() * questions.length);
-    return questions[randomIndex];
+    return questions[10];
   },
 };
