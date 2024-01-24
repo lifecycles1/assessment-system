@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const User = require("../user");
+const ForumProfile = require("./profile");
 
 const replySchema = new mongoose.Schema({
   creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -12,6 +12,16 @@ const replySchema = new mongoose.Schema({
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
+// Middleware to decrement user's replyCount when a reply is deleted
+replySchema.post("remove", async function (doc, next) {
+  try {
+    await ForumProfile.updateOne({ user: doc.creator }, { $inc: { replyCount: -1 } });
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 replySchema.methods.toggleLike = async function (userId) {
   const likeIndex = this.likes.indexOf(userId);
   if (likeIndex !== -1) {
@@ -21,37 +31,32 @@ replySchema.methods.toggleLike = async function (userId) {
   }
   await this.save();
 
-  await User.bulkWrite([
+  const likeCountUpdate = likeIndex !== -1 ? -1 : 1;
+
+  await ForumProfile.bulkWrite([
     {
       updateOne: {
-        filter: { _id: userId },
-        update: { $inc: { likesGiven: likeIndex !== -1 ? -1 : 1 } },
+        filter: { user: userId },
+        update: {
+          $inc: {
+            likesGiven: likeCountUpdate,
+          },
+        },
       },
     },
     {
       updateOne: {
-        filter: { _id: this.creator },
-        update: { $inc: { likesReceived: likeIndex !== -1 ? -1 : 1 } },
+        filter: { user: this.creator },
+        update: {
+          $inc: {
+            likesReceived: likeCountUpdate,
+          },
+        },
       },
     },
   ]);
-
-  const Topic = require("./topic");
-  const topic = await Topic.findById(this.parentTopicId);
-  const replyIndex = topic.replies.findIndex((reply) => reply._id.equals(this._id));
-  /**
-   * Index of the user's like in topic.reply.likes[]
-   * @type {number}
-   */
-  const userLikeIndex = topic.replies[replyIndex].likes.indexOf(userId);
-  if (userLikeIndex !== -1) {
-    topic.replies[replyIndex].likes.splice(userLikeIndex, 1);
-  } else {
-    topic.replies[replyIndex].likes.push(userId);
-  }
-  await topic.save();
 };
 
 const Reply = mongoose.model("Reply", replySchema);
 
-module.exports = { Reply, replySchema };
+module.exports = Reply;

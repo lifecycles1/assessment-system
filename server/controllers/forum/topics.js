@@ -1,5 +1,6 @@
 const Topic = require("../../models/forum/topic");
-const User = require("../../models/user");
+const ForumProfile = require("../../models/forum/profile");
+const Reply = require("../../models/forum/reply");
 
 const createTopic = async (req, res) => {
   try {
@@ -11,11 +12,10 @@ const createTopic = async (req, res) => {
       message,
       category,
     });
-
-    const user = await User.findById(userId);
-    if (user) await user.incrementPostCount();
-
     await newTopic.save();
+
+    const forumProfile = await ForumProfile.findOne({ user: userId });
+    forumProfile.incrementPostCount();
 
     return res.status(201).json(newTopic);
   } catch (error) {
@@ -28,7 +28,38 @@ const getTopics = async (req, res) => {
   try {
     // no filter when category is "home", otherwise filter by category.
     const categoryFilter = req.params.category !== "home" ? { category: req.params.category } : {};
-    const topics = await Topic.find(categoryFilter).sort({ createdAt: -1 });
+    const topics = await Topic.aggregate([
+      { $match: categoryFilter },
+      { $sort: { createdAt: -1 } },
+      {
+        $lookup: {
+          from: "replies",
+          localField: "_id",
+          foreignField: "parentTopicId",
+          as: "replies",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+              },
+            },
+          ],
+        },
+      },
+    ]);
+
+    const forumProfile = await ForumProfile.findOne({ user: req.query.userId });
+
+    // CONDITION RUNS ONLY ONCE PER USER TO ASSIGN A FORUM PROFILE
+    if (!forumProfile) {
+      // creates a forum profile object for the user if one doesn't exist
+      // to track forum statistics (days visited, read time, etc).
+      const newForumProfile = new ForumProfile({ user: req.query.userId });
+      await newForumProfile.save();
+    }
+
+    forumProfile.updateDaysVisited();
+
     return res.status(200).json(topics);
   } catch (error) {
     console.log(error);
@@ -38,18 +69,17 @@ const getTopics = async (req, res) => {
 
 const getTopic = async (req, res) => {
   try {
-    const topic = await Topic.findById(req.params.id)
-      // populate the Topic's creator field with the creator's email and picture,
-      // then populate the replies' creator fields with the repliers' email and picture
-      .populate({ path: "creator", select: "email picture" })
-      .populate({ path: "replies.creator", select: "email picture" });
+    const topic = await Topic.findById(req.params.id).populate({ path: "creator", select: "email picture" });
+    const replies = await Reply.find({ parentTopicId: req.params.id }).populate({ path: "creator", select: "email picture" });
 
     topic.incrementViews();
+    const userForumProfile = await ForumProfile.findOne({ user: req.query.userId });
+    userForumProfile.incrementTopicsViewed(req.params.id);
 
-    const user = await User.findById(req.query.userId);
-    if (user) user.incrementTopicsViewed(req.params.id);
-
-    return res.status(200).json(topic);
+    return res.status(200).json({
+      ...topic.toObject(),
+      replies,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Error retrieving topic" });

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import NewTopicModal from "../modals/NewTopicModal";
 import { updateFeed } from "../../../utils/forum/common";
+import jwt_decode from "jwt-decode";
 
 const TopicTile = ({ topic }) => {
   return (
@@ -21,7 +22,7 @@ const TopicTile = ({ topic }) => {
         <img src={topic.creator?.picture || "https://via.placeholder.com/40"} alt="User" className="w-6 h-6 rounded-full" />
       </div>
       <div className="flex space-x-20 text-lg text-gray-600">
-        <div>{topic.replies.length}</div>
+        <div>{topic.replies?.length}</div>
         <div>{topic.views}</div>
       </div>
     </div>
@@ -29,22 +30,31 @@ const TopicTile = ({ topic }) => {
 };
 
 const TopicList = ({ category }) => {
+  const [token, setToken] = useState(null);
   const [topics, setTopics] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState("desc");
 
   useEffect(() => {
-    if (!category) return;
+    const encoded = localStorage.getItem("token");
+    if (encoded) {
+      const decoded = jwt_decode(encoded);
+      setToken(decoded);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!category && !token) return;
     const fetchTopics = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/topics/${category}`);
+        const response = await axios.get(`http://localhost:3000/topics/${category}?userId=${token.id}`);
         setTopics(response.data);
       } catch (error) {
         console.error("Error fetching topics:", error);
       }
     };
     fetchTopics();
-  }, [category]);
+  }, [category, token]);
 
   const sortTopics = (type) => {
     // toggle sort order (type === "latest" is not toggleable)
@@ -91,7 +101,7 @@ const TopicList = ({ category }) => {
         <div className="flex space-x-10 mr-[15px]">
           <div onClick={() => sortTopics("replyCount")}>Replies</div>
           <div onClick={() => sortTopics("views")}>Views</div>
-          <div>Activity</div>
+          {/* <div>Activity</div> */}
         </div>
       </div>
       {topics.map((topic) => (

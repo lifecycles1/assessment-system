@@ -12,6 +12,7 @@ const LearningPath = () => {
       // return true to unlock the first tile
       return true;
     }
+    // otherwise unlock all tiles that have been completed
     return data?.pathProgress[0].completedChallenges.includes(challengeId);
   };
 

@@ -7,9 +7,6 @@ import Profile from "./pages/Profile";
 import Forum from "./pages/Forum";
 import Main from "./components/forum/Main";
 import Topic from "./components/forum/Content/Topic";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import jwt_decode from "jwt-decode";
 import Summary from "./components/forum/profile/Summary";
 import Activity from "./components/forum/profile/Activity";
 import Badges from "./components/forum/profile/Badges";
@@ -19,29 +16,6 @@ import LearningPath from "./components/student-dash/LearningPath";
 import Challenge from "./components/student-dash/Challenge";
 
 function App() {
-  const [token, setToken] = useState(null);
-
-  useEffect(() => {
-    const encoded = localStorage.getItem("token");
-    if (encoded) {
-      const decoded = jwt_decode(encoded);
-      setToken(decoded);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (token) {
-      const updateDaysVisited = async () => {
-        try {
-          await axios.put(`http://localhost:3000/profile/${token.id}/days-visited`);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      updateDaysVisited();
-    }
-  }, [token]);
-
   return (
     <Router>
       <Routes>

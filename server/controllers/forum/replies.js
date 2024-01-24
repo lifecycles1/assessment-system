@@ -1,6 +1,6 @@
 const Topic = require("../../models/forum/topic");
-const { Reply } = require("../../models/forum/reply");
-const User = require("../../models/user");
+const Reply = require("../../models/forum/reply");
+const ForumProfile = require("../../models/forum/profile");
 
 const addReply = async (req, res) => {
   try {
@@ -16,10 +16,11 @@ const addReply = async (req, res) => {
       parentMessageCreator,
       parentMessage,
     });
-    topic.replies.push(newReply);
-    const user = await User.findById(userId);
-    if (user) await user.incrementReplyCount();
-    await Promise.all([topic.save(), newReply.save()]);
+    await newReply.save();
+
+    const forumProfile = await ForumProfile.findOne({ user: userId });
+    forumProfile.incrementReplyCount();
+
     await newReply.populate({ path: "creator", select: "email picture" });
     return res.status(200).json(newReply);
   } catch (error) {

@@ -1,5 +1,5 @@
 const Topic = require("../../models/forum/topic");
-const { Reply } = require("../../models/forum/reply");
+const Reply = require("../../models/forum/reply");
 
 const toggleLike = async (req, res) => {
   try {
