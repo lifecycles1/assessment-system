@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const StudentDashboard = () => {
   return (
-    <div className="grid grid-cols-3 gap-4 p-8 mt-[52px]">
+    <div className="grid grid-cols-3 gap-4 p-8 bg-gray-800 h-[calc(100vh-48px)] overflow-y-auto">
       <div className="col-span-2">
         <Link to="lp">
           <div className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:to-cyan-600 p-8 text-white rounded-md cursor-pointer">

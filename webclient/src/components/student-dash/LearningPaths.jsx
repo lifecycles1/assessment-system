@@ -44,7 +44,7 @@ const LearningPaths = () => {
 
   // TO-DO: change all these conditional renders to something better
   return (
-    <div className="grid grid-cols-3 gap-4 p-8 mt-[52px]">
+    <div className="grid grid-cols-3 gap-4 p-8 bg-gray-800 h-[calc(100vh-48px)] overflow-y-auto">
       {data?.learningPaths.map((lp) => (
         <div key={lp._id} className="col-span-3">
           {isPathUnLocked(lp.title) ? (

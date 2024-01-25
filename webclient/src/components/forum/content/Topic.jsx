@@ -212,7 +212,7 @@ const Topic = () => {
       <div className="fixed left-0 top-12 overflow-y-auto z-10">
         <SideBar category={category} setCategory={handleCategoryChange} />
       </div>
-      <div className="flex-1 ml-[260px] overflow-y-auto mt-8 p-12">
+      <div className="flex-1 ml-[260px] p-12 h-[calc(100vh-48px)] overflow-y-auto">
         <h2 className="text-2xl font-bold mb-3">{topic.title}</h2>
         <div className="mb-8">{topic.category}</div>
         <div className="message-box">

@@ -21,9 +21,7 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <div className="fixed top-0 z-20 w-full">
-          <NavigationBar />
-        </div>
+        <NavigationBar />
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="signup" element={<Signup />} />

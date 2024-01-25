@@ -10,7 +10,7 @@ const Challenge = () => {
   const [useCodeEditor, setUseCodeEditor] = useState(true);
 
   return (
-    <div className="p-4 mt-16">
+    <div className="p-4 h-[calc(100vh-48px)] overflow-y-auto">
       <div className="flex justify-between">
         <div></div>
         <div className="mb-4 flex items-center text-sm mr-12">

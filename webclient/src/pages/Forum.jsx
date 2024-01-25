@@ -27,7 +27,7 @@ const Forum = () => {
       <div className="fixed left-0 top-12 overflow-y-auto z-10">
         <SideBar category={category} setCategory={handleCategoryChange} />
       </div>
-      <div className="flex-1 ml-[260px] overflow-y-auto">
+      <div className="flex-1 ml-[260px]">
         <main>
           <TopicList category={category} />
         </main>

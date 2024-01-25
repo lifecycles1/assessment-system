@@ -9,7 +9,7 @@ import { useAuth } from "../../../hooks/useAuthContext";
 const TopicTile = ({ topic }) => {
   return (
     <div className="flex items-center border-b border-gray-200">
-      <div className="w-[560px] h-[85px] flex flex-col justify-center mr-20">
+      <div className="w-[560px] h-[85px] flex flex-col justify-center mr-20 pl-2">
         <Link to={`/forum/${topic.category}/t/${topic._id}`} className="text-lg">
           {topic.title.substring(0, 115)}...
         </Link>
@@ -70,7 +70,7 @@ const TopicList = ({ category }) => {
   };
 
   return (
-    <div className="mt-8 p-5">
+    <div className="p-5 h-[calc(100vh-48px)] overflow-y-auto">
       <div className="flex justify-between mt-8 mb-4 items-center">
         <div className="flex">
           <div className="space-x-2">
@@ -89,7 +89,7 @@ const TopicList = ({ category }) => {
         </button>
       </div>
       <div className="flex justify-between items-center border-b border-gray-200 text-lg text-gray-600">
-        <div>Topic</div>
+        <div className="pl-1">Topic</div>
         <div className="flex space-x-10 mr-[15px]">
           <div onClick={() => sortTopics("replyCount")}>Replies</div>
           <div onClick={() => sortTopics("views")}>Views</div>

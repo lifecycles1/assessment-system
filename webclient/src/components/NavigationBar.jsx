@@ -23,7 +23,7 @@ const NavigationBar = () => {
   };
 
   return (
-    <nav className="bg-gradient-to-r from-cyan-500 to-blue-600 p-4 flex justify-between items-center h-12">
+    <nav className="sticky top-0 z-20 bg-gradient-to-r from-cyan-500 to-blue-600 p-4 flex justify-between items-center h-12">
       {/* Left section - Logo */}
       <div className="text-white text-lg font-semibold">Your Logo</div>
 

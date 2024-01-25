@@ -57,10 +57,9 @@ const TeacherAssessments = () => {
       if (currentLoaderRef) observer.unobserve(currentLoaderRef);
     };
   }, [hasMore]);
-
   return (
-    <div className="pb-10">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
+    <div className="bg-gray-800 p-4 pb-6 h-[calc(100vh-48px)] overflow-y-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {assessments.map((assessment) => (
           <AssessmentCard key={assessment._id} listType="teacher" assessment={assessment} setAssessments={setAssessments} />
         ))}

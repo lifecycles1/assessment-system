@@ -13,7 +13,6 @@ const StudentAssessments = () => {
       try {
         const response = await axios.get(`http://localhost:3000/student-assessments/${token.email}`);
         setAssessments(response.data);
-        console.log("response", response.data);
       } catch (error) {
         console.log(error);
       }
@@ -22,7 +21,7 @@ const StudentAssessments = () => {
   }, [token]);
 
   return (
-    <div>
+    <div className="bg-gray-800 h-[calc(100vh-48px)] overflow-y-auto">
       <h2 className="text-2xl text-center font-semibold mb-4 text-neutral-200">Your Assessments</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mx-20">
         {assessments?.map((assessment) => (
