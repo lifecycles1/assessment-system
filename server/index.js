@@ -13,11 +13,12 @@ connectToMongoDB();
 
 // Routes
 const authRoutes = require("./routes/auth");
-const question = require("./routes/question");
 const assessmentRoutes = require("./routes/assessments");
 app.use(authRoutes);
-app.use(question);
 app.use(assessmentRoutes);
+// learning paths routes
+const learningPathsRoutes = require("./routes/learningPaths");
+app.use(learningPathsRoutes);
 // forum routes
 const topicRoutes = require("./routes/forum/topics");
 const replyRoutes = require("./routes/forum/replies");
@@ -27,9 +28,9 @@ app.use(topicRoutes);
 app.use(replyRoutes);
 app.use(likeRoutes);
 app.use(profileRoutes);
-// learning paths routes
-const learningPathsRoutes = require("./routes/learningPaths");
-app.use(learningPathsRoutes);
+// deprecated. see Challenge
+// const question = require("./routes/question");
+// app.use(question);
 
 const PORT = process.env.PORT || 3000;
 

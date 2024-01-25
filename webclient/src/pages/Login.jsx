@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import jwt_decode from "jwt-decode";
 import LoadingButton from "../components/common/LoadingButton";
+import { useAuth } from "../hooks/useAuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -10,21 +10,11 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const token = localStorage.getItem("token");
-  const isAuthenticated = Boolean(token);
+  const { login, token } = useAuth();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      const decoded = jwt_decode(token);
-      const currentTime = Date.now() / 1000;
-      if (currentTime > decoded.exp) {
-        localStorage.removeItem("token");
-        setError("Session has expired. Please login again.");
-      } else {
-        navigate("/dashboard");
-      }
-    }
-  }, [isAuthenticated, navigate, token]);
+    if (token) navigate("dashboard");
+  }, [navigate, token]);
 
   const submit = async (e) => {
     e.preventDefault();
@@ -33,8 +23,7 @@ const Login = () => {
       const response = await axios.post("http://localhost:3000/signin", { email, password });
       const { data } = response;
       if (data.token) {
-        localStorage.setItem("token", data.token);
-        navigate("/dashboard");
+        login(data.token);
       } else {
         setError("Authentication failed. Email or password is incorrect.");
       }

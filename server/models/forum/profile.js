@@ -15,7 +15,7 @@ forumProfileSchema.methods.updateDaysVisited = async function () {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    if (this.daysVisited[this.daysVisited.length - 1].getTime() !== today.getTime()) {
+    if (this.daysVisited[this.daysVisited.length - 1]?.getTime() !== today.getTime()) {
       await this.updateOne({ $push: { daysVisited: today } });
     }
   } catch (error) {

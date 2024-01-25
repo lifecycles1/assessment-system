@@ -49,6 +49,7 @@ const getTopics = async (req, res) => {
     ]);
 
     const forumProfile = await ForumProfile.findOne({ user: req.query.userId });
+    forumProfile?.updateDaysVisited();
 
     // CONDITION RUNS ONLY ONCE PER USER TO ASSIGN A FORUM PROFILE
     if (!forumProfile) {
@@ -57,8 +58,6 @@ const getTopics = async (req, res) => {
       const newForumProfile = new ForumProfile({ user: req.query.userId });
       await newForumProfile.save();
     }
-
-    forumProfile.updateDaysVisited();
 
     return res.status(200).json(topics);
   } catch (error) {
@@ -73,8 +72,8 @@ const getTopic = async (req, res) => {
     const replies = await Reply.find({ parentTopicId: req.params.id }).populate({ path: "creator", select: "email picture" });
 
     topic.incrementViews();
-    const userForumProfile = await ForumProfile.findOne({ user: req.query.userId });
-    userForumProfile.incrementTopicsViewed(req.params.id);
+    const forumProfile = await ForumProfile.findOne({ user: req.query.userId });
+    forumProfile.incrementTopicsViewed(req.params.id);
 
     return res.status(200).json({
       ...topic.toObject(),

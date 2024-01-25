@@ -7,8 +7,10 @@ import "ace-builds/src-noconflict/theme-monokai";
 import AceEditor from "react-ace";
 import axios from "axios";
 import LoadingButton from "../common/LoadingButton";
+import { useAuth } from "../../hooks/useAuthContext";
 
-const CodeEditor = ({ token, question }) => {
+const CodeEditor = ({ data }) => {
+  const { token } = useAuth();
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
   const [javascriptCode, setJavascriptCode] = useState(`function solution(a) {\n// write your solution here\n}`);
   const [pythonCode, setPythonCode] = useState(`def solution(a):`);
@@ -26,7 +28,7 @@ const CodeEditor = ({ token, question }) => {
     try {
       const response = await axios.post(`https://europe-west2-code-assessment-401704.cloudfunctions.net/${endpoint}`, {
         code: codeToRun,
-        question: question,
+        question: data.challenge,
       });
       if (response.data.error) {
         setResponseMessage(response.data.error);
@@ -47,7 +49,7 @@ const CodeEditor = ({ token, question }) => {
     const payload = {
       email: token.email,
       language: selectedLanguage,
-      question: question,
+      question: data.challenge,
       code: codeToSubmit,
     };
     try {
@@ -155,8 +157,7 @@ const CodeEditor = ({ token, question }) => {
 };
 
 CodeEditor.propTypes = {
-  token: PropTypes.object.isRequired,
-  question: PropTypes.object,
+  data: PropTypes.object,
 };
 
 export default CodeEditor;

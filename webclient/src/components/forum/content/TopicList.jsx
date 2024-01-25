@@ -4,13 +4,13 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import NewTopicModal from "../modals/NewTopicModal";
 import { updateFeed } from "../../../utils/forum/common";
-import jwt_decode from "jwt-decode";
+import { useAuth } from "../../../hooks/useAuthContext";
 
 const TopicTile = ({ topic }) => {
   return (
     <div className="flex items-center border-b border-gray-200">
       <div className="w-[560px] h-[85px] flex flex-col justify-center mr-20">
-        <Link to={`${topic.category}/t/${topic._id}`} className="text-lg">
+        <Link to={`/forum/${topic.category}/t/${topic._id}`} className="text-lg">
           {topic.title.substring(0, 115)}...
         </Link>
         <div className="text-sm">{topic.category}</div>
@@ -30,21 +30,13 @@ const TopicTile = ({ topic }) => {
 };
 
 const TopicList = ({ category }) => {
-  const [token, setToken] = useState(null);
+  const { token } = useAuth();
   const [topics, setTopics] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState("desc");
 
   useEffect(() => {
-    const encoded = localStorage.getItem("token");
-    if (encoded) {
-      const decoded = jwt_decode(encoded);
-      setToken(decoded);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!category && !token) return;
+    if (!token) return;
     const fetchTopics = async () => {
       try {
         const response = await axios.get(`http://localhost:3000/topics/${category}?userId=${token.id}`);
@@ -53,7 +45,7 @@ const TopicList = ({ category }) => {
         console.error("Error fetching topics:", error);
       }
     };
-    fetchTopics();
+    if (category.length > 0) fetchTopics();
   }, [category, token]);
 
   const sortTopics = (type) => {
@@ -114,11 +106,10 @@ const TopicList = ({ category }) => {
 
 TopicTile.propTypes = {
   topic: PropTypes.object,
-  index: PropTypes.number,
 };
 
 TopicList.propTypes = {
-  category: PropTypes.string,
+  category: PropTypes.string.isRequired,
 };
 
 export default TopicList;

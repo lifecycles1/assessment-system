@@ -1,26 +1,27 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuthContext";
 
 const LearningPaths = () => {
-  const location = useLocation();
+  const { token } = useAuth();
   const navigate = useNavigate();
-  const [userId] = useState(location.state?.token.id);
+
   const [data, setData] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
+    if (!token) return;
     const fetchLearningPaths = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/${userId}/lp`);
-        console.log("response", response.data);
+        const response = await axios.get(`http://localhost:3000/${token.id}/lp`);
         setData(response.data);
       } catch (error) {
         console.log(error);
       }
     };
     fetchLearningPaths();
-  }, [userId]);
+  }, [token]);
 
   const isPathUnLocked = (title) => data?.pathProgress.some((progress) => progress.learningPath === title);
 
@@ -29,18 +30,21 @@ const LearningPaths = () => {
   const handleUnlockedLearningPathClick = (clickedLearningPath) => {
     // Find the progress for the clicked learning path
     const clickedPathProgress = data?.pathProgress.find((progress) => progress.learningPath === clickedLearningPath.title);
-    // and narrow down the data object to only the clicked learning path and its progress
-    const updatedData = {
-      ...data,
-      learningPaths: [clickedLearningPath],
-      pathProgress: [clickedPathProgress],
-    };
-    navigate(clickedLearningPath.title.toLowerCase(), { state: { data: updatedData } });
+
+    navigate(clickedLearningPath.title.toLowerCase(), {
+      state: {
+        // and narrow down the data object to only the clicked learning path and its progress
+        data: {
+          learningPath: clickedLearningPath,
+          pathProgress: clickedPathProgress,
+        },
+      },
+    });
   };
 
   // TO-DO: change all these conditional renders to something better
   return (
-    <div className="grid grid-cols-3 gap-4 p-8">
+    <div className="grid grid-cols-3 gap-4 p-8 mt-[52px]">
       {data?.learningPaths.map((lp) => (
         <div key={lp._id} className="col-span-3">
           {isPathUnLocked(lp.title) ? (

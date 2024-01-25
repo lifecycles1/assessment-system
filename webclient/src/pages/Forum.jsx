@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import NavigationBar from "../components/NavigationBar";
 import SideBar from "../components/forum/SideBar";
-import Main from "../components/forum/Main";
 import { useNavigate, useLocation } from "react-router-dom";
+import TopicList from "../components/forum/content/TopicList";
 
 const Forum = () => {
   const navigate = useNavigate();
@@ -25,14 +24,13 @@ const Forum = () => {
 
   return (
     <div>
-      <div className="fixed top-0 z-20 w-full">
-        <NavigationBar />
-      </div>
       <div className="fixed left-0 top-12 overflow-y-auto z-10">
         <SideBar category={category} setCategory={handleCategoryChange} />
       </div>
       <div className="flex-1 ml-[260px] overflow-y-auto">
-        <Main category={category} />
+        <main>
+          <TopicList category={category} />
+        </main>
       </div>
     </div>
   );

@@ -1,21 +1,18 @@
 import axios from "axios";
 import PropTypes from "prop-types";
 import { useState } from "react";
-import jwt_decode from "jwt-decode";
+import { useAuth } from "../../../hooks/useAuthContext";
 
 const NewTopicModal = ({ onClose, updateFeed }) => {
+  const { token } = useAuth();
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("general");
   const [message, setMessage] = useState("");
 
-  const token = localStorage.getItem("token");
-  const decodedToken = token ? jwt_decode(token) : null;
-  const userId = decodedToken ? decodedToken.id : "";
-
   const handleSubmit = async () => {
-    if (userId && title && message && category) {
+    if (token.id && title && message && category) {
       try {
-        const payload = { userId, title, message, category };
+        const payload = { userId: token.id, title, message, category };
         const response = await axios.post("http://localhost:3000/createTopic", payload);
         updateFeed(response.data);
         onClose();

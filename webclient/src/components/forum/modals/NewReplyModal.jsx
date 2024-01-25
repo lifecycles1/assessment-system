@@ -1,20 +1,17 @@
 import axios from "axios";
 import PropTypes from "prop-types";
 import { useState } from "react";
-import jwt_decode from "jwt-decode";
 import leftArrow from "../../../assets/left-arrow.svg";
+import { useAuth } from "../../../hooks/useAuthContext";
 
 const NewReplyModal = ({ topicId, title, parentType, parentMessageId, parentMessageCreator, parentMessage, parentMessageCreatorEmail, parentMessageCreatorPicture, onClose, updateFeed }) => {
+  const { token } = useAuth();
   const [message, setMessage] = useState("");
 
-  const token = localStorage.getItem("token");
-  const decodedToken = token ? jwt_decode(token) : null;
-  const userId = decodedToken ? decodedToken.id : "";
-
   const handleSubmit = async () => {
-    if (userId && message && parentMessageId && parentMessageCreator && parentMessage) {
+    if (token.id && message && parentMessageId && parentMessageCreator && parentMessage) {
       try {
-        const payload = { userId, message, parentMessageId, parentMessageCreator, parentMessage };
+        const payload = { userId: token.id, message, parentMessageId, parentMessageCreator, parentMessage };
         const response = await axios.post(`http://localhost:3000/${topicId}/reply`, payload);
         updateFeed(response.data);
         onClose();

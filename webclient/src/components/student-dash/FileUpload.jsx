@@ -2,8 +2,10 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 import axios from "axios";
 import { useDropzone } from "react-dropzone";
+import { useAuth } from "../../hooks/useAuthContext";
 
-const FileUpload = ({ token, question }) => {
+const FileUpload = ({ data }) => {
+  const { token } = useAuth();
   const [responseMessage, setResponseMessage] = useState(null);
 
   const maxFileSize = 1024 * 1024; // 1MB
@@ -27,7 +29,7 @@ const FileUpload = ({ token, question }) => {
     formData.append("file", selectedFile);
     formData.append("email", token.email);
     formData.append("language", selectedFile.name.endsWith(".js") ? "javascript" : "python");
-    formData.append("question", JSON.stringify(question));
+    formData.append("question", JSON.stringify(data.challenge));
 
     try {
       const response = await axios.post("http://localhost:3000/submit-code", formData);
@@ -60,8 +62,7 @@ const FileUpload = ({ token, question }) => {
 };
 
 FileUpload.propTypes = {
-  token: PropTypes.object.isRequired,
-  question: PropTypes.object.isRequired,
+  data: PropTypes.object.isRequired,
 };
 
 export default FileUpload;

@@ -349,9 +349,9 @@ const questions = [
   },
 ];
 
-module.exports = {
-  getRandomQuestion: () => {
-    const randomIndex = Math.floor(Math.random() * questions.length);
-    return questions[10];
-  },
-};
+// module.exports = {
+//   getRandomQuestion: () => {
+//     const randomIndex = Math.floor(Math.random() * questions.length);
+//     return questions[10];
+//   },
+// };

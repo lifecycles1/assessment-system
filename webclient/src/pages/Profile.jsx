@@ -1,39 +1,29 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import NavigationBar from "../components/NavigationBar";
 import { useEffect, useState } from "react";
 import SideBar from "../components/forum/SideBar";
-import jwt_decode from "jwt-decode";
-import { useParams } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "../hooks/useAuthContext";
 
 const Profile = () => {
+  const { token } = useAuth();
   const navigate = useNavigate();
-  const { id } = useParams();
-  const [token, setToken] = useState(null);
   const [category, setCategory] = useState(localStorage.getItem("selectedCategory"));
   const [selectedTab, setSelectedTab] = useState("summary");
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    const encoded = localStorage.getItem("token");
-    if (encoded) {
-      const decoded = jwt_decode(encoded);
-      setToken(decoded);
-    }
-  }, []);
-
-  useEffect(() => {
+    if (!token) return;
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/profile/${id}`);
-        console.log(response.data);
+        const response = await axios.get(`http://localhost:3000/profile/${token.id}`);
+        console.log("profile page data", response.data);
         setUserData(response.data);
       } catch (error) {
         console.log(error);
       }
     };
     fetchUser();
-  }, [id]);
+  }, [token]);
 
   const handleTabClick = (tab) => {
     setSelectedTab((prev) => (prev === tab ? prev : tab));
@@ -47,9 +37,6 @@ const Profile = () => {
 
   return (
     <div>
-      <div className="fixed top-0 z-20 w-full">
-        <NavigationBar />
-      </div>
       <div className="fixed left-0 top-12 overflow-y-auto z-10">
         <SideBar category={category} setCategory={handleCategoryChange} />
       </div>

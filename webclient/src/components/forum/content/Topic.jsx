@@ -1,5 +1,4 @@
 import PropTypes from "prop-types";
-import NavigationBar from "../../NavigationBar";
 import SideBar from "../SideBar";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,10 +7,11 @@ import NewReplyModal from "../modals/NewReplyModal";
 import { updateFeed, calculateTimeDifference } from "../../../utils/forum/common";
 import leftArrow from "../../../assets/left-arrow.svg";
 import heartOutline from "../../../assets/heart-outline.svg";
-import jwt_decode from "jwt-decode";
 import heartSolid from "../../../assets/heart-solid.svg";
+import { useAuth } from "../../../hooks/useAuthContext";
 
-const MessageTile = ({ topic, onReply, userId }) => {
+const MessageTile = ({ topic, onReply }) => {
+  const { token } = useAuth();
   const [likes, setLikes] = useState([]);
 
   useEffect(() => {
@@ -32,9 +32,9 @@ const MessageTile = ({ topic, onReply, userId }) => {
           <div></div>
           <div className="flex items-center">
             <div className="flex px-4 py-2 space-x-2 transition duration-300 ease-in-out hover:bg-gray-200">
-              {likes?.length > 0 && <div title={generateLikeCounterTitle(likes, userId)}>{likes.length}</div>}
-              <button onClick={() => handleLike("topic", topic._id, setLikes, userId)} className="">
-                {likes?.includes(userId) ? <img src={heartSolid} alt="Heart Solid" className="w-4 h-4" title="undo like" /> : <img src={heartOutline} alt="Heart Outline" className="w-4 h-4" title="like this post" />}
+              {likes?.length > 0 && <div title={generateLikeCounterTitle(likes, token.id)}>{likes.length}</div>}
+              <button onClick={() => handleLike("topic", topic._id, setLikes, token.id)} className="">
+                {likes?.includes(token?.id) ? <img src={heartSolid} alt="Heart Solid" className="w-4 h-4" title="undo like" /> : <img src={heartOutline} alt="Heart Outline" className="w-4 h-4" title="like this post" />}
               </button>
             </div>
             <button onClick={() => onReply("topic", topic._id, topic.creator._id, topic.message)} className="flex items-center space-x-2 px-4 py-2 text-gray-400 transition duration-300 ease-in-out hover:bg-gray-200">
@@ -86,7 +86,8 @@ const MessageTile = ({ topic, onReply, userId }) => {
   );
 };
 
-const ReplyTile = ({ reply, onReply, userId }) => {
+const ReplyTile = ({ reply, onReply }) => {
+  const { token } = useAuth();
   const [likes, setLikes] = useState(reply.likes);
 
   return (
@@ -99,9 +100,9 @@ const ReplyTile = ({ reply, onReply, userId }) => {
           <div></div>
           <div className="flex items-center">
             <div className="flex px-4 py-2 space-x-2 transition duration-300 ease-in-out hover:bg-gray-200">
-              {likes?.length > 0 && <div title={generateLikeCounterTitle(likes, userId)}>{likes.length}</div>}
-              <button onClick={() => handleLike("reply", reply._id, setLikes, userId)} className="">
-                {likes?.includes(userId) ? <img src={heartSolid} alt="Heart Solid" className="w-4 h-4" title="undo like" /> : <img src={heartOutline} alt="Heart Outline" className="w-4 h-4" title="like this post" />}
+              {likes?.length > 0 && <div title={generateLikeCounterTitle(likes, token.id)}>{likes.length}</div>}
+              <button onClick={() => handleLike("reply", reply._id, setLikes, token.id)} className="">
+                {likes?.includes(token?.id) ? <img src={heartSolid} alt="Heart Solid" className="w-4 h-4" title="undo like" /> : <img src={heartOutline} alt="Heart Outline" className="w-4 h-4" title="like this post" />}
               </button>
             </div>
             <button onClick={() => onReply("reply", reply._id, reply.creator._id, reply.message, reply.creator.email, reply.creator.picture)} className="flex items-center space-x-2 px-4 py-2 text-gray-400 transition duration-300 ease-in-out hover:bg-gray-200">
@@ -116,6 +117,7 @@ const ReplyTile = ({ reply, onReply, userId }) => {
 };
 
 const Topic = () => {
+  const { token } = useAuth();
   const routeParams = useParams();
   const navigate = useNavigate();
   const [category, setCategory] = useState(localStorage.getItem("selectedCategory"));
@@ -133,23 +135,14 @@ const Topic = () => {
     parentMessageCreatorPicture: null,
   });
   const [startTime] = useState(new Date());
-  const [userId, setUserId] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const decodedToken = token ? jwt_decode(token) : null;
-    const userId = decodedToken ? decodedToken.id : "";
-    setUserId(userId);
-  }, []);
-
-  useEffect(() => {
-    if (!userId) return;
-
+    if (!token) return;
     const fetchTopic = async () => {
       const topicId = routeParams.id;
       try {
         const response = await axios.get(`http://localhost:3000/topics/${category}/${topicId}`, {
-          params: { userId },
+          params: { userId: token.id },
         });
         setTopic(response.data);
         setReplies(response.data.replies);
@@ -165,7 +158,7 @@ const Topic = () => {
       const elapsedTimeInSeconds = Math.floor((endTime - startTime) / 1000);
       const payload = { time: elapsedTimeInSeconds };
       try {
-        await axios.put(`http://localhost:3000/profile/${userId}/read-time`, payload);
+        await axios.put(`http://localhost:3000/profile/${token.id}/read-time`, payload);
       } catch (error) {
         console.error("Error sending elapsed reading time:", error);
       }
@@ -179,7 +172,7 @@ const Topic = () => {
       // send elapsed reading time when user "navigates away from the topic page"
       sendElapsedReadingTime();
     };
-  }, [category, routeParams.id, startTime, userId]);
+  }, [category, routeParams.id, startTime, token]);
 
   useEffect(() => {
     if (replies.length === 0) return;
@@ -216,9 +209,6 @@ const Topic = () => {
 
   return (
     <div>
-      <div className="fixed top-0 z-20 w-full">
-        <NavigationBar />
-      </div>
       <div className="fixed left-0 top-12 overflow-y-auto z-10">
         <SideBar category={category} setCategory={handleCategoryChange} />
       </div>
@@ -226,11 +216,11 @@ const Topic = () => {
         <h2 className="text-2xl font-bold mb-3">{topic.title}</h2>
         <div className="mb-8">{topic.category}</div>
         <div className="message-box">
-          <MessageTile topic={topic} onReply={onReply} userId={userId} />
+          <MessageTile topic={topic} onReply={onReply} />
         </div>
         <div className="replies-box">
           {replies.map((reply) => (
-            <ReplyTile key={reply._id} reply={reply} onReply={onReply} userId={userId} />
+            <ReplyTile key={reply._id} reply={reply} onReply={onReply} />
           ))}
         </div>
         <div className="mt-20">
@@ -261,13 +251,11 @@ const Topic = () => {
 MessageTile.propTypes = {
   topic: PropTypes.object,
   onReply: PropTypes.func,
-  userId: PropTypes.string,
 };
 
 ReplyTile.propTypes = {
   reply: PropTypes.object,
   onReply: PropTypes.func,
-  userId: PropTypes.string,
 };
 
 const handleLike = async (type, messageId, setLikes, userId) => {

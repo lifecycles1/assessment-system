@@ -22,14 +22,14 @@ learningPathSchema.statics.loadPathsAndProgress = async function (userId) {
         totalChallenges: firstLearningPath.challenges.length,
       });
       await firstPathProgress.save();
-      const challenges = await Challenge.find({ _id: { $in: firstLearningPath.challenges } }, "title");
+      const challenges = await Challenge.find({ _id: { $in: firstLearningPath.challenges } });
       firstLearningPath.challenges = challenges;
       firstPath = firstPathProgress;
     }
 
     for (const pathProgress of pathProgresses) {
       const learningPath = learningPaths.find((path) => path.title === pathProgress.learningPath);
-      const challenges = await Challenge.find({ _id: { $in: learningPath.challenges } }, "title");
+      const challenges = await Challenge.find({ _id: { $in: learningPath.challenges } });
       learningPath.challenges = challenges;
     }
 
