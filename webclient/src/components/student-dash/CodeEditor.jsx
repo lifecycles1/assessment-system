@@ -22,24 +22,21 @@ const CodeEditor = ({ data }) => {
   const [testResults, setTestResults] = useState(null);
   const [loadingSubmitBtn, setLoadingSubmitBtn] = useState(false);
   const [loadingTestsBtn, setLoadingBtn] = useState(false);
-  // resize height of tests slide-up bar
+  // resize refs tests slide-up bar
   const containerRef = useRef(null);
   const dragRef = useRef(null);
   const testsRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
 
   const runTests = async () => {
-    // hint that tests are expandable by sliding up the bar a bit if it is closed when running tests
-    if (testsRef.current.clientHeight < 40) {
-      testsRef.current.style.height = "200px";
-      dragRef.current.style.top = `${containerRef.current.clientHeight - 36 - dragRef.current.offsetHeight / 2 - 200}px`;
-    }
     setLoadingBtn(true);
-    const codeToRun = selectedLanguage === "javascript" ? javascriptCode : pythonCode;
-    const endpoint = selectedLanguage === "javascript" ? "jsCode" : "pythonCode";
     setResponseMessage(null);
     setTestResults(null);
+
     try {
+      // run tests
+      const codeToRun = selectedLanguage === "javascript" ? javascriptCode : pythonCode;
+      const endpoint = selectedLanguage === "javascript" ? "jsCode" : "pythonCode";
       const response = await axios.post(`https://europe-west2-code-assessment-401704.cloudfunctions.net/${endpoint}`, {
         code: codeToRun,
         question: data.challenge,
@@ -48,18 +45,25 @@ const CodeEditor = ({ data }) => {
         setResponseMessage(response.data.error);
         return;
       }
+      // set height to expand initial hight by a few pixels to indicate tests are expandable
+      setIsDragging(true); // workaround to temporary use the same state variable: allow resizing to auto expand tests bar if not run yet
+      if (testsRef.current.clientHeight < 40) {
+        dragRef.current.style.top = `${containerRef.current.clientHeight - 36 - dragRef.current.offsetHeight / 2 - 80}px`;
+        testsRef.current.style.height = "80px";
+      }
+
       setTestResults(response.data);
       return response.data;
     } catch (error) {
       setResponseMessage("Error running tests.");
     } finally {
+      setIsDragging(false);
       setLoadingBtn(false);
     }
   };
 
   const submitCode = async () => {
     setLoadingSubmitBtn(true);
-    setResponseMessage(null);
     try {
       // run tests first to make sure code is correct
       const results = await runTests();
@@ -97,17 +101,19 @@ const CodeEditor = ({ data }) => {
     }
   };
 
+  // resize tests
   const handleMouseUp = () => setIsDragging(false);
   const handleMouseDown = (e) => {
     e.preventDefault(); // prevent text selection while resizing
+    if (!testResults) return; // don't allow resizing if tests haven't been run yet
     setIsDragging(true);
   };
   const handleMouseMove = (e) => {
     if (!isDragging) return;
-    // Adjust the position of the drag handle with e.clientY and constrain it within the container
     const drag = dragRef.current;
+    // Adjust the position of the drag handle with e.clientY and constrain it within the container
     const dragPos = e.clientY - 36.5 - drag.offsetHeight / 2;
-    const minPos = containerRef.current.clientHeight - 69.5 - drag.offsetHeight / 2;
+    const minPos = containerRef.current.clientHeight - 69.5 - drag.offsetHeight / 2; // closed
     const maxPos = 36.5 - drag.offsetHeight / 2;
     drag.style.top = `${Math.min(Math.max(dragPos, maxPos), minPos)}px`;
     // add/remove height to tests slide up bar height - min 36
@@ -144,9 +150,9 @@ const CodeEditor = ({ data }) => {
       <div ref={dragRef} onMouseDown={handleMouseDown} className="z-10 absolute bottom-[65px] left-1/2 -translate-x-1/2 h-[10px] w-[48px] rounded bg-[#1a1a1a] cursor-row-resize border-t border-blue-200"></div>
       {/* slide-up bar - run tests, and test results */}
       <div ref={testsRef} className="bg-[#272822] h-[36px] overflow-y-auto overflow-x-hidden border-t border-blue-200/40">
-        <div className="flex w-full px-4 h-[35px] items-center">
+        <div className="flex w-full px-4 h-[35px] items-center sticky">
           <div className="border-b-2 border-blue-500 cursor-default">TESTS</div>
-          <div className="flex-1 text-end">
+          <div className="flex-1 text-end whitespace-nowrap">
             <LoadingButton onClick={runTests} className="bg-blue-500 px-2 text-white rounded-sm hover:bg-blue-600" type="button" loading={loadingTestsBtn} text="Run Tests" />
           </div>
         </div>

@@ -2,12 +2,10 @@ import PropTypes from "prop-types";
 import { useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import CodeEditor from "./CodeEditor";
-import FileUpload from "./FileUpload";
 
 const Challenge = () => {
   const location = useLocation();
   const [data] = useState(location.state?.data);
-  const [useCodeEditor, setUseCodeEditor] = useState(true);
 
   // resize tests
   const containerRef = useRef(null);
@@ -16,9 +14,11 @@ const Challenge = () => {
   const dragRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  const handleMouseDown = () => setIsDragging(true);
   const handleMouseUp = () => setIsDragging(false);
-
+  const handleMouseDown = (e) => {
+    e.preventDefault(); // prevent text selection while resizing
+    setIsDragging(true);
+  };
   const handleMouseMove = (e) => {
     if (!isDragging) return;
     const container = containerRef.current;
@@ -40,7 +40,7 @@ const Challenge = () => {
       <div id="drag" ref={dragRef} onMouseDown={handleMouseDown}></div>
       {/* Right half */}
       <div id="right_panel" ref={rightRef}>
-        {useCodeEditor ? <CodeEditor data={data} /> : <FileUpload data={data} />}
+        <CodeEditor data={data} />
       </div>
     </div>
   );
@@ -81,6 +81,11 @@ Question.propTypes = {
   challenge: PropTypes.object,
 };
 
+// FILE UPLOAD TEMPORARILY DISABLED
+
+// import FileUpload from "./FileUpload";
+// {useCodeEditor ? <CodeEditor data={data} /> : <FileUpload data={data} />}
+// const [useCodeEditor, setUseCodeEditor] = useState(true);
 // <div className="flex justify-between">
 // <div></div>
 // <div className="mb-4 flex items-center text-sm mr-12">
