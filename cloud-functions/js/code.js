@@ -12,6 +12,8 @@ exports.jsCode = (req, res) => {
     try {
       const { code, question } = req.body;
 
+      console.log("req.body", req.body);
+
       const results = [];
       for (const input of question.inputsOutputs) {
         const sandbox = {
@@ -33,7 +35,7 @@ exports.jsCode = (req, res) => {
           const startMemoryUsage = process.memoryUsage().heapUsed;
           results = (function() {
           ${code}
-          return solution(${JSON.stringify(input.inputs)});
+          return solution(...${JSON.stringify(input.inputs)});
           })();
           const endTimestamp = performance.now()
           const endMemoryUsage = process.memoryUsage().heapUsed;

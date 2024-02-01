@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { studentSubmitAssessment, getStudentAssessments, getTeacherAssessments, markAssessment } = require("../controllers/assessments");
 
-router.post("/submit-code", studentSubmitAssessment);
+router.post("/submit-assessment", studentSubmitAssessment);
 
 router.get("/student-assessments/:email", getStudentAssessments);
 

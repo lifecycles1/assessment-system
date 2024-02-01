@@ -12,8 +12,9 @@ const studentSubmitAssessment = async (req, res) => {
     let assessmentData = {};
     if (req.get("content-type") === "application/json") {
       AssessmentModel = EditorAssessment;
-      const { email, source, language, code, question } = req.body;
-      assessmentData = { email, source, language, question, code };
+      const { email, language, code, question } = req.body;
+      console.log("student submit assessment", req.body);
+      assessmentData = { email, language, question, code };
     } else if (req.get("content-type").startsWith("multipart/form-data")) {
       AssessmentModel = FileAssessment;
       const form = new formidable.IncomingForm();

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-const { Challenge } = require("../models/challenge");
-const { LearningPath } = require("../models/learningPath");
+const Challenge = require("../models/challenge");
+const LearningPath = require("../models/learningPath");
 const { challengeData } = require("./challenges");
 const { learningPathsData } = require("./learningPaths");
 
@@ -45,3 +45,5 @@ async function seedDatabase() {
 }
 
 seedDatabase();
+
+// question: `Given an array $a$ that contains only numbers in the range\nfrom 1 to a.length, find the first duplicate number\nfor which the second occurrence has the minimal index.\nIn other words, if there are more than 1 duplicated numbers,\nreturn the number for which the second occurrence has a smaller\nindex than the second occurrence of the other number does.\nIf there are no such elements, return -1.`,

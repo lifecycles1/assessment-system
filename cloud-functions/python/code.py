@@ -1,5 +1,6 @@
 import json
 
+
 def deep_equal(a, b):
     if a == b:
         return True
@@ -21,6 +22,7 @@ def deep_equal(a, b):
         return True
     return False
 
+
 def python_code(request):
     # Handling CORS headers for preflight requests
     if request.method == "OPTIONS":
@@ -41,11 +43,11 @@ def python_code(request):
         for input_data in question["inputsOutputs"]:
             sandbox_locals = {}
             sandbox_locals["printed_output"] = []
-            
+
             code_string = (
                 "def execute_user_code():\n"
                 f"  {code}\n"
-                f"  globals()['res'] = solution({json.dumps(input_data['inputs'])})\n"
+                f"  globals()['res'] = solution(*{json.dumps(input_data['inputs'])})\n"
                 "execute_user_code()"
             )
 
@@ -58,7 +60,7 @@ def python_code(request):
                         formatted_args.append(json.dumps(arg))
                 output = " ".join(formatted_args)
                 sandbox_locals["printed_output"].append(output)
-            
+
             sandbox_locals['print'] = custom_print
 
             exec(code_string, sandbox_locals)

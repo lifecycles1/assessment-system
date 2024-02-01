@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const challengeSchema = new mongoose.Schema({
+  type: { type: String, enum: ["learningPath", "assessment"] },
   title: { type: String },
   learningPath: { type: String },
   suggestedTime: { type: String },

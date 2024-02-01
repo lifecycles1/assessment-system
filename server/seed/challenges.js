@@ -1,10 +1,12 @@
 const challengeData = [
   {
+    type: "learningPath",
     title: "First Duplicate",
     learningPath: "Arrays",
     suggestedTime: "15 mins",
     difficulty: "easy",
-    question: `Given an array a that contains only numbers in the range\nfrom 1 to a.length, find the first duplicate number\nfor which the second occurrence has the minimal index.\nIn other words, if there are more than 1 duplicated numbers,\nreturn the number for which the second occurrence has a smaller\nindex than the second occurrence of the other number does.\nIf there are no such elements, return -1.`,
+    question:
+      "Given an array $a$ that contains only numbers in the range from 1 to a.length, find the first duplicate number for which the second occurrence has the minimal index. In other words, if there are more than 1 duplicated numbers, return the number for which the second occurrence has a smaller index than the second occurrence of the other number does. If there are no such elements, return -1.",
     example: `For a = [2, 1, 3, 5, 3, 2],\nthe output should be\nsolution(a) = 3.\nThere are 2 duplicates: numbers 2 and 3.\nThe second occurrence of 3 has a smaller index than\nthe second occurrence of 2 does, so the answer is 3.\n\nFor a = [2, 2], the output should be solution(a) = 2;\n\nFor a = [2, 4, 3, 5, 1], the output should be solution(a) = -1.`,
     inputsOutputs: [
       {
@@ -22,11 +24,12 @@ const challengeData = [
     ],
   },
   {
+    type: "learningPath",
     title: "First Non-Repeating Character",
     learningPath: "Arrays",
     suggestedTime: "15 mins",
     difficulty: "easy",
-    question: `Given a string s consisting of small English letters,\nfind and return the first instance of a non-repeating character\nin it. If there is no such character, return '_'.`,
+    question: "Given a string $s$ consisting of small English letters, find and return the first instance of a non-repeating character in it. If there is no such character, return '_'.",
     example: `For s = "abacabad", the output should be\nsolution(s) = 'c'.\nThere are 2 non-repeating characters in the string: 'c' and 'd'.\nReturn c since it appears in the string first.\n\nFor s = "abacabaabacaba", the output should be\nsolution(s) = '_'.\nThere are no characters in this string that do not repeat.`,
     inputsOutputs: [
       {
@@ -44,12 +47,13 @@ const challengeData = [
     ],
   },
   {
+    type: "learningPath",
     title: "Rotate Image",
     learningPath: "Arrays",
     suggestedTime: "15 mins",
     difficulty: "easy",
-    question: `You are given an n x n 2D matrix that represents an image.\nRotate the image by 90 degrees (clockwise).`,
-    example: `For a = [[1, 2, 3],\n         [4, 5, 6],\n         [7, 8, 9]],\n\nthe output should be solution(a) = [[7, 4, 1],\n                                    [8, 5, 2],\n                                    [9, 6, 3]].`,
+    question: "You are given an n x n 2D matrix that represents an image. Rotate the image by 90 degrees (clockwise).",
+    example: `For $a$ = [[1, 2, 3],\n         [4, 5, 6],\n         [7, 8, 9]],\n\nthe output should be solution(a) = [[7, 4, 1],\n                                    [8, 5, 2],\n                                    [9, 6, 3]].`,
     inputsOutputs: [
       {
         inputs: [
@@ -114,11 +118,13 @@ const challengeData = [
     ],
   },
   {
+    type: "learningPath",
     title: "Sudoku 2",
     learningPath: "Arrays",
     suggestedTime: "30 mins",
     difficulty: "easy",
-    question: `Sudoku is a number-placement puzzle. The objective is to fill a 9 × 9 grid\nwith numbers in such a way that each column, each row, and each of the\nnine 3 × 3 sub-grids that compose the grid all contain all of the numbers\nfrom 1 to 9 one time. Implement an algorithm that will check whether the\ngiven grid of numbers represents a valid Sudoku puzzle according to the\nlayout rules described above. Note that the puzzle represented by grid does\nnot have to be solvable.`,
+    question:
+      "Sudoku is a number-placement puzzle. The objective is to fill a 9 × 9 $grid$ with numbers in such a way that each column, each row, and each of the nine 3 × 3 sub-grids that compose the grid all contain all of the numbers from 1 to 9 one time. Implement an algorithm that will check whether the given grid of numbers represents a valid Sudoku puzzle according to the layout rules described above. Note that the puzzle represented by grid does not have to be solvable.",
     example: `For grid = [['.', '.', '.', '1', '4', '.', '.', '2', '.'],
             ['.', '.', '6', '.', '.', '.', '.', '.', '.'],
             ['.', '.', '.', '.', '.', '.', '.', '.', '.'],
@@ -188,17 +194,13 @@ const challengeData = [
     ],
   },
   {
+    type: "learningPath",
     title: "isCryptSolution",
     learningPath: "Arrays",
     suggestedTime: "15 mins",
     difficulty: "easy",
-    question: `A cryptarithm is a mathematical puzzle for which the goal is to find the correspondence between letters and digits, such that the given arithmetic equation consisting of letters holds true when the letters are converted to digits.
-
-    You have an array of strings crypt, the cryptarithm, and an an array containing the mapping of letters and digits, solution. The array crypt will contain three non-empty strings that follow the structure: [word1, word2, word3], which should be interpreted as the word1 + word2 = word3 cryptarithm.
-    
-    If crypt, when it is decoded by replacing all of the letters in the cryptarithm with digits using the mapping in solution, becomes a valid arithmetic equation containing no numbers with leading zeroes, the answer is true. If it does not become a valid arithmetic solution, the answer is false.
-    
-    Note that number 0 doesn't contain leading zeroes (while for example 00 or 0123 do)`,
+    question:
+      "A cryptarithm is a mathematical puzzle for which the goal is to find the correspondence between letters and digits, such that the given arithmetic equation consisting of letters holds true when the letters are converted to digits. You have an array of strings $crypt$, the cryptarithm, and an an array containing the mapping of letters and digits, $solution$. The array crypt will contain three non-empty strings that follow the structure: [word1, word2, word3], which should be interpreted as the word1 + word2 = word3 cryptarithm. If crypt, when it is decoded by replacing all of the letters in the cryptarithm with digits using the mapping in solution, becomes a valid arithmetic equation containing no numbers with leading zeroes, the answer is true. If it does not become a valid arithmetic solution, the answer is false. Note that number 0 doesn't contain leading zeroes (while for example 00 or 0123 do)",
     example: `For crypt = ["SEND", "MORE", "MONEY"] and
     solution = [['O', '0'],
             ['M', '1'],
@@ -266,13 +268,13 @@ Even though 054 + 091 = 145, 054 and 091 both contain leading zeroes, meaning th
     ],
   },
   {
+    type: "learningPath",
     title: "removeKFromList",
     learningPath: "Linked Lists",
     suggestedTime: "15 mins",
     difficulty: "easy",
-    question: `Note: Try to solve this task in O(n) time using O(1) additional space, where n is the number of elements in the list, since this is what you'll be asked to do during an interview.
-
-    Given a singly linked list of integers l and an integer k, remove all elements from list l that have a value equal to k.`,
+    question:
+      "Note: Try to solve this task in O(n) time using O(1) additional space, where n is the number of elements in the list, since this is what you'll be asked to do during an interview. Given a singly linked list of integers $l$ and an integer $k$, remove all elements from list l that have a value equal to k.",
     example: `For l = [3, 1, 2, 3, 4, 5] and k = 3, the output should be
     solution(l, k) = [1, 2, 4, 5];
     For l = [1, 2, 3, 4, 5, 6, 7] and k = 10, the output should be

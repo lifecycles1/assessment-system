@@ -9,13 +9,19 @@ const NavigationBar = () => {
   const ProfileDropdown = () => {
     return (
       <div className="absolute right-0 top-0 mt-12 w-48 bg-white rounded-md overflow-hidden shadow-xl z-10">
-        <Link to={`/forum/u/summary`} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">
+        <Link to="/forum/u/summary" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200" onClick={() => setIsOpen(false)}>
           Profile
         </Link>
-        <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">
+        <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200" onClick={() => setIsOpen(false)}>
           Settings
         </Link>
-        <button onClick={logout} className="block px-4 py-2 text-sm cursor-pointer text-gray-700 hover:bg-gray-200 w-full text-left">
+        <button
+          onClick={() => {
+            logout();
+            setIsOpen(false);
+          }}
+          className="block px-4 py-2 text-sm cursor-pointer text-gray-700 hover:bg-gray-200 w-full text-left"
+        >
           Logout
         </button>
       </div>

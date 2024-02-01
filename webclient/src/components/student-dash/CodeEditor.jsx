@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import "ace-builds/src-noconflict/ace";
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/mode-python";
@@ -12,14 +12,28 @@ import { useAuth } from "../../hooks/useAuthContext";
 const CodeEditor = ({ data }) => {
   const { token } = useAuth();
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
-  const [javascriptCode, setJavascriptCode] = useState(`function solution(a) {\n// write your solution here\n}`);
-  const [pythonCode, setPythonCode] = useState(`def solution(a):`);
+  const paramNames = extractParameters(data.challenge.question, data.challenge.example);
+  const paramArray = paramNames.split(",");
+  const savedJavascriptCode = data.challenge.challengeProgress?.code.find((code) => code.language === "javascript")?.code;
+  const savedPythonCode = data.challenge.challengeProgress?.code.find((code) => code.language === "python")?.code;
+  const [javascriptCode, setJavascriptCode] = useState(savedJavascriptCode || `function solution(${paramNames}) {\n// write your solution here\n}`);
+  const [pythonCode, setPythonCode] = useState(savedPythonCode || `def solution(${paramNames}):`);
   const [responseMessage, setResponseMessage] = useState(null);
   const [testResults, setTestResults] = useState(null);
   const [loadingSubmitBtn, setLoadingSubmitBtn] = useState(false);
   const [loadingTestsBtn, setLoadingBtn] = useState(false);
+  // resize height of tests slide-up bar
+  const containerRef = useRef(null);
+  const dragRef = useRef(null);
+  const testsRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const runTests = async () => {
+    // hint that tests are expandable by sliding up the bar a bit if it is closed when running tests
+    if (testsRef.current.clientHeight < 40) {
+      testsRef.current.style.height = "200px";
+      dragRef.current.style.top = `${containerRef.current.clientHeight - 36 - dragRef.current.offsetHeight / 2 - 200}px`;
+    }
     setLoadingBtn(true);
     const codeToRun = selectedLanguage === "javascript" ? javascriptCode : pythonCode;
     const endpoint = selectedLanguage === "javascript" ? "jsCode" : "pythonCode";
@@ -35,6 +49,7 @@ const CodeEditor = ({ data }) => {
         return;
       }
       setTestResults(response.data);
+      return response.data;
     } catch (error) {
       setResponseMessage("Error running tests.");
     } finally {
@@ -45,15 +60,34 @@ const CodeEditor = ({ data }) => {
   const submitCode = async () => {
     setLoadingSubmitBtn(true);
     setResponseMessage(null);
-    const codeToSubmit = selectedLanguage === "javascript" ? javascriptCode : pythonCode;
-    const payload = {
-      email: token.email,
-      language: selectedLanguage,
-      question: data.challenge,
-      code: codeToSubmit,
-    };
     try {
-      const response = await axios.post("http://localhost:3000/submit-code", payload);
+      // run tests first to make sure code is correct
+      const results = await runTests();
+      // if any of the tests failed, don't submit/save code to database
+      if (!results.isCorrect.every((result) => result)) {
+        setResponseMessage("Please make sure all tests pass before submitting.");
+        return;
+      }
+      const codeToSubmit = selectedLanguage === "javascript" ? javascriptCode : pythonCode;
+      const endpoint = data.challenge.type === "learningPath" ? "submit-pathChallenge" : "submit-assessment";
+      const payload =
+        data.challenge.type === "learningPath"
+          ? // learning path challenge
+            {
+              userId: token.id,
+              pathProgressId: data.pathProgressId,
+              challengeId: data.challenge._id,
+              language: selectedLanguage,
+              code: codeToSubmit,
+            }
+          : // assessment challenge
+            {
+              email: token.email,
+              language: selectedLanguage,
+              question: data.challenge,
+              code: codeToSubmit,
+            };
+      const response = await axios.post(`http://localhost:3000/${endpoint}`, payload);
       setResponseMessage(response.data.message === "success" ? "Code submitted successfully!" : "Code submission failed.");
     } catch (error) {
       setResponseMessage("Error submitting code.");
@@ -63,41 +97,98 @@ const CodeEditor = ({ data }) => {
     }
   };
 
-  const scrollToTestResults = () => {
-    window.scroll({
-      top: window.scrollY + 400,
-      behavior: "smooth",
-    });
+  const handleMouseUp = () => setIsDragging(false);
+  const handleMouseDown = (e) => {
+    e.preventDefault(); // prevent text selection while resizing
+    setIsDragging(true);
+  };
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    // Adjust the position of the drag handle with e.clientY and constrain it within the container
+    const drag = dragRef.current;
+    const dragPos = e.clientY - 36.5 - drag.offsetHeight / 2;
+    const minPos = containerRef.current.clientHeight - 69.5 - drag.offsetHeight / 2;
+    const maxPos = 36.5 - drag.offsetHeight / 2;
+    drag.style.top = `${Math.min(Math.max(dragPos, maxPos), minPos)}px`;
+    // add/remove height to tests slide up bar height - min 36
+    testsRef.current.style.height = `${Math.max(containerRef.current.clientHeight - e.clientY, 36)}px`;
   };
 
   return (
-    <div className="rounded-md p-4 mx-auto w-[600px]">
-      <div className="mb-4 -mt-4">
-        <div className="flex items-center space-x-4 py-4 -mb-4 text-sm">
-          <button onClick={() => setSelectedLanguage("javascript")} className={`px-2 py-1 rounded border border-[#0a0a0a] text-gray-300 ${selectedLanguage === "javascript" ? "bg-[#1a1a1a]" : "bg-[#272822] hover:bg-[#1a1a1a]"}`}>
-            JavaScript
-          </button>
-          <button onClick={() => setSelectedLanguage("python")} className={`px-2 py-1 rounded border border-[#0a0a0a] text-gray-300 ${selectedLanguage === "python" ? "bg-[#1a1a1a]" : "bg-[#272822] hover:bg-[#1a1a1a]"}`}>
-            Python
-          </button>
+    <div ref={containerRef} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} className="h-[100%] flex flex-col relative">
+      {/* top bar - language buttons */}
+      <div className="h-[36px] bg-[#272822] px-4 flex items-center">
+        <div className="flex flex-1">
+          <div className="flex-1">
+            <button onClick={() => setSelectedLanguage("javascript")} className={`px-2 rounded border border-[#0a0a0a] text-gray-300 ${selectedLanguage === "javascript" ? "bg-[#1a1a1a]" : "bg-[#272822] hover:bg-[#1a1a1a]"}`}>
+              JavaScript
+            </button>
+          </div>
+          <div className="flex-grow">
+            <button onClick={() => setSelectedLanguage("python")} className={`px-2 rounded border border-[#0a0a0a] text-gray-300 ${selectedLanguage === "python" ? "bg-[#1a1a1a]" : "bg-[#272822] hover:bg-[#1a1a1a]"}`}>
+              Python
+            </button>
+          </div>
+        </div>
+        <div className="flex-grow text-right">dskgjhsdkgj</div>
+      </div>
+      {/* editor - code editor */}
+      <div className="flex-grow relative">
+        {selectedLanguage === "javascript" ? (
+          <AceEditor style={{ height: "100%", width: "100%" }} mode={selectedLanguage} theme="monokai" onChange={(newCode) => setJavascriptCode(newCode)} value={javascriptCode} editorProps={{ $blockScrolling: true }} setOptions={{ useWorker: false }} />
+        ) : selectedLanguage === "python" ? (
+          <AceEditor style={{ height: "100%", width: "100%" }} mode={selectedLanguage} theme="monokai" onChange={(newCode) => setPythonCode(newCode)} value={pythonCode} editorProps={{ $blockScrolling: true }} setOptions={{ useWorker: false }} />
+        ) : null}
+      </div>
+      {/* drag bar - draggable bar to resize slide-up bar */}
+      <div ref={dragRef} onMouseDown={handleMouseDown} className="z-10 absolute bottom-[65px] left-1/2 -translate-x-1/2 h-[10px] w-[48px] rounded bg-[#1a1a1a] cursor-row-resize border-t border-blue-200"></div>
+      {/* slide-up bar - run tests, and test results */}
+      <div ref={testsRef} className="bg-[#272822] h-[36px] overflow-y-auto overflow-x-hidden border-t border-blue-200/40">
+        <div className="flex w-full px-4 h-[35px] items-center">
+          <div className="border-b-2 border-blue-500 cursor-default">TESTS</div>
+          <div className="flex-1 text-end">
+            <LoadingButton onClick={runTests} className="bg-blue-500 px-2 text-white rounded-sm hover:bg-blue-600" type="button" loading={loadingTestsBtn} text="Run Tests" />
+          </div>
+        </div>
+        <div>
+          <Tests paramArray={paramArray} responseMessage={responseMessage} testResults={testResults} />
         </div>
       </div>
-      {selectedLanguage === "javascript" && <AceEditor mode={selectedLanguage} theme="monokai" onChange={(newCode) => setJavascriptCode(newCode)} value={javascriptCode} editorProps={{ $blockScrolling: true }} setOptions={{ useWorker: false }} width="100%" height="300px" />}
-      {selectedLanguage === "python" && <AceEditor mode={selectedLanguage} theme="monokai" onChange={(newCode) => setPythonCode(newCode)} value={pythonCode} editorProps={{ $blockScrolling: true }} setOptions={{ useWorker: false }} width="100%" height="300px" />}
-      <div className="flex justify-center items-center space-x-12 text-sm border-t border-b border-blue-200/40 py-1">
-        <LoadingButton type="button" onClick={submitCode} loading={loadingSubmitBtn} className="w-[97px] px-2 py-1 bg-[#23776d] text-white rounded hover:bg-[#14756a]" text="Submit Code" />
-        <LoadingButton type="button" onClick={runTests} loading={loadingTestsBtn} className="w-[74px] px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600" text="Run Tests" />
-        {testResults && (
-          <div onClick={scrollToTestResults} className="relative cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#807e7e" className="w-4 -ml-11">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 5.25l-7.5 7.5-7.5-7.5m15 6l-7.5 7.5-7.5-7.5" />
-            </svg>
-          </div>
-        )}
+      {/* bottom bar - submit code */}
+      <div className="bg-[#272822] px-4 h-[36px] flex justify-center items-center border-t border-blue-200/40">
+        <div className="flex-1">something</div>
+        <div className="flex-shrink-0">
+          <LoadingButton onClick={submitCode} className="bg-[#23776d] px-2 text-white rounded-sm hover:bg-[#14756a]" type="button" loading={loadingSubmitBtn} text="Submit" />
+        </div>
       </div>
+    </div>
+  );
+};
+
+const extractParameters = (questionString, exampleString) => {
+  const combinedString = questionString + " " + exampleString;
+  const paramPattern = /\$(\w+)\$/g; // will match parameter names surrounded by dollar signs
+  let paramNames = "";
+  let match;
+  while ((match = paramPattern.exec(combinedString)) !== null) {
+    paramNames += match[1] + ", ";
+  }
+  paramNames = paramNames.slice(0, -2); // remove trailing comma and space
+  return paramNames;
+};
+
+CodeEditor.propTypes = {
+  data: PropTypes.object,
+};
+
+export default CodeEditor;
+
+const Tests = ({ paramArray, responseMessage, testResults }) => {
+  return (
+    <div>
       {responseMessage && <div className={`mt-4 text-sm ${responseMessage.includes("successfully") ? "text-[#23776d]" : "text-red-400"}`}>{responseMessage}</div>}
       {testResults && (
-        <div className="px-4 py-2 rounded-b-md bg-gray-800">
+        <div className="px-4 py-2 rounded-b-md">
           <div className={`font-semibold text-lg mb-2 ${testResults.isCorrect.every((result) => result) ? "text-[#23776d]" : "text-red-400"}`}>{`Tests Passed: ${testResults.isCorrect.filter((result) => result).length}/${testResults.isCorrect.length}`}</div>
           <div className="h-[350px] overflow-y-auto">
             {testResults.inputs.map((input, index) => (
@@ -110,7 +201,7 @@ const CodeEditor = ({ data }) => {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                       </svg>
                     </span>
-                    {testResults.executionTimes[index].toFixed(3)} ms
+                    {testResults.executionTimes?.[index].toFixed(3)} ms
                   </div>
                   <div className="flex items-center text-neutral-500">
                     <span className="mr-1">
@@ -122,7 +213,7 @@ const CodeEditor = ({ data }) => {
                         />
                       </svg>
                     </span>
-                    {(testResults.memoryUsages[index] / 1024 / 1024).toFixed(4)} MB
+                    {(testResults.memoryUsages?.[index] / 1024 / 1024).toFixed(4)} MB
                   </div>
                   <div className={`${testResults.isCorrect[index] ? "text-[#46c3b4]" : "text-red-400"}`}>{testResults.isCorrect[index] ? "Passed ✓" : "Wrong answer ✗"}</div>
                 </div>
@@ -136,7 +227,11 @@ const CodeEditor = ({ data }) => {
                 <div className="mb-2 flex break-all space-x-10 text-neutral-200">
                   <div className="flex-1">
                     <div className="">Input:</div>
-                    <div className="font-semibold">{JSON.stringify(input)}</div>
+                    {input.map((param, index) => (
+                      <div key={index} className="font-semibold">
+                        {`${paramArray[index]}: ${JSON.stringify(param)}`}
+                      </div>
+                    ))}
                   </div>
                   <div className="flex-1">
                     <div className="">Output:</div>
@@ -156,8 +251,8 @@ const CodeEditor = ({ data }) => {
   );
 };
 
-CodeEditor.propTypes = {
-  data: PropTypes.object,
+Tests.propTypes = {
+  paramArray: PropTypes.array,
+  responseMessage: PropTypes.string,
+  testResults: PropTypes.object,
 };
-
-export default CodeEditor;

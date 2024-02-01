@@ -28,9 +28,6 @@ app.use(topicRoutes);
 app.use(replyRoutes);
 app.use(likeRoutes);
 app.use(profileRoutes);
-// deprecated. see Challenge
-// const question = require("./routes/question");
-// app.use(question);
 
 const PORT = process.env.PORT || 3000;
 
