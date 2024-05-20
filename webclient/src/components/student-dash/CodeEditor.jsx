@@ -22,7 +22,7 @@ const CodeEditor = ({ data }) => {
   const [testResults, setTestResults] = useState(null);
   const [loadingSubmitBtn, setLoadingSubmitBtn] = useState(false);
   const [loadingTestsBtn, setLoadingBtn] = useState(false);
-  // resize refs tests slide-up bar
+  // resize refs for tests slide-up bar
   const containerRef = useRef(null);
   const dragRef = useRef(null);
   const testsRef = useRef(null);
@@ -73,6 +73,7 @@ const CodeEditor = ({ data }) => {
         return;
       }
       const codeToSubmit = selectedLanguage === "javascript" ? javascriptCode : pythonCode;
+      // submit-assessment endpoint temporarily deprecated
       const endpoint = data.challenge.type === "learningPath" ? "submit-pathChallenge" : "submit-assessment";
       const payload =
         data.challenge.type === "learningPath"
@@ -91,7 +92,7 @@ const CodeEditor = ({ data }) => {
               question: data.challenge,
               code: codeToSubmit,
             };
-      const response = await axios.post(`http://localhost:3000/${endpoint}`, payload);
+      const response = await axios.post(`/api/${endpoint}`, payload);
       setResponseMessage(response.data.message === "success" ? "Code submitted successfully!" : "Code submission failed.");
     } catch (error) {
       setResponseMessage("Error submitting code.");
@@ -136,7 +137,7 @@ const CodeEditor = ({ data }) => {
             </button>
           </div>
         </div>
-        <div className="flex-grow text-right">dskgjhsdkgj</div>
+        <div className="flex-grow text-right"></div>
       </div>
       {/* editor - code editor */}
       <div className="flex-grow relative">
@@ -150,10 +151,10 @@ const CodeEditor = ({ data }) => {
       <div ref={dragRef} onMouseDown={handleMouseDown} className="z-10 absolute bottom-[65px] left-1/2 -translate-x-1/2 h-[10px] w-[48px] rounded bg-[#1a1a1a] cursor-row-resize border-t border-blue-200"></div>
       {/* slide-up bar - run tests, and test results */}
       <div ref={testsRef} className="bg-[#272822] h-[36px] overflow-y-auto overflow-x-hidden border-t border-blue-200/40">
-        <div className="flex w-full px-4 h-[35px] items-center sticky">
+        <div className="flex w-full px-4 h-[35px] bg-[#272822] items-center sticky top-0 border-b border-blue-200/40">
           <div className="border-b-2 border-blue-500 cursor-default">TESTS</div>
-          <div className="flex-1 text-end whitespace-nowrap">
-            <LoadingButton onClick={runTests} className="bg-blue-500 px-2 text-white rounded-sm hover:bg-blue-600" type="button" loading={loadingTestsBtn} text="Run Tests" />
+          <div className="flex-1 text-end h-[26px] whitespace-nowrap">
+            <LoadingButton onClick={runTests} className="bg-blue-500 w-[82px] px-2 mt-[1px] text-white rounded-sm hover:bg-blue-600" type="button" loading={loadingTestsBtn} text="Run Tests" />
           </div>
         </div>
         <div>
@@ -162,7 +163,7 @@ const CodeEditor = ({ data }) => {
       </div>
       {/* bottom bar - submit code */}
       <div className="bg-[#272822] px-4 h-[36px] flex justify-center items-center border-t border-blue-200/40">
-        <div className="flex-1">something</div>
+        <div className="flex-1"></div>
         <div className="flex-shrink-0">
           <LoadingButton onClick={submitCode} className="bg-[#23776d] px-2 text-white rounded-sm hover:bg-[#14756a]" type="button" loading={loadingSubmitBtn} text="Submit" />
         </div>

@@ -21,7 +21,7 @@ const Signup = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:3000/signup", { email, password, role });
+      const response = await axios.post("/api/signup", { email, password, role });
       const { data } = response;
       if (data.token) {
         login(data.token);

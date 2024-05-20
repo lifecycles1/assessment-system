@@ -20,7 +20,7 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:3000/signin", { email, password });
+      const response = await axios.post("/api/signin", { email, password });
       const { data } = response;
       if (data.token) {
         login(data.token);

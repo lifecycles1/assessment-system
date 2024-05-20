@@ -141,7 +141,7 @@ const Topic = () => {
     const fetchTopic = async () => {
       const topicId = routeParams.id;
       try {
-        const response = await axios.get(`http://localhost:3000/topics/${category}/${topicId}`, {
+        const response = await axios.get(`/api/topics/${category}/${topicId}`, {
           params: { userId: token.id },
         });
         setTopic(response.data);
@@ -158,7 +158,7 @@ const Topic = () => {
       const elapsedTimeInSeconds = Math.floor((endTime - startTime) / 1000);
       const payload = { time: elapsedTimeInSeconds };
       try {
-        await axios.put(`http://localhost:3000/profile/${token.id}/read-time`, payload);
+        await axios.put(`/api/profile/${token.id}/read-time`, payload);
       } catch (error) {
         console.error("Error sending elapsed reading time:", error);
       }
@@ -260,7 +260,7 @@ ReplyTile.propTypes = {
 
 const handleLike = async (type, messageId, setLikes, userId) => {
   try {
-    const response = await axios.post(`http://localhost:3000/${messageId}/like`, { type, userId });
+    const response = await axios.post(`/api/${messageId}/like`, { type, userId });
     setLikes(response.data.likes);
   } catch (error) {
     console.error("Error toggling like:", error);

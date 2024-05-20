@@ -15,7 +15,7 @@ const Profile = () => {
     if (!token) return;
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/profile/${token.id}`);
+        const response = await axios.get(`/api/profile/${token.id}`);
         console.log("profile page data", response.data);
         setUserData(response.data);
       } catch (error) {

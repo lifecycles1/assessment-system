@@ -13,7 +13,7 @@ const NewTopicModal = ({ onClose, updateFeed }) => {
     if (token.id && title && message && category) {
       try {
         const payload = { userId: token.id, title, message, category };
-        const response = await axios.post("http://localhost:3000/createTopic", payload);
+        const response = await axios.post("/api/createTopic", payload);
         updateFeed(response.data);
         onClose();
       } catch (error) {

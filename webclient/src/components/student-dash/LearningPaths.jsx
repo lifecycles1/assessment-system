@@ -14,7 +14,7 @@ const LearningPaths = () => {
     if (!token) return;
     const fetchLearningPaths = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/${token.id}/lp`);
+        const response = await axios.get(`/api/${token.id}/lp`);
         setData(response.data);
       } catch (error) {
         console.log(error);

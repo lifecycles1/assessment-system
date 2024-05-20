@@ -23,7 +23,7 @@ const TeacherAssessments = () => {
     // Fetch all student's assessments with a "pending" status
     const fetchAssessments = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/teacher-assessments?page=${page}`);
+        const response = await axios.get(`/api/teacher-assessments?page=${page}`);
         if (response.data.length > 0) {
           // instead of normally spreading the response data with prev, we filter out any duplicates
           // because of the double execution of useEffect in StrictMode on initial render
