@@ -32,7 +32,7 @@ const FileUpload = ({ data }) => {
     formData.append("question", JSON.stringify(data.challenge));
 
     try {
-      const response = await axios.post("/api/submit-code", formData);
+      const response = await axios.post("http://localhost:8080/submit-code", formData);
       setResponseMessage(`File uploaded successfully: ${response.data.message}`);
     } catch (error) {
       setResponseMessage("Error uploading file");

@@ -14,7 +14,7 @@ const LearningPaths = () => {
     if (!token) return;
     const fetchLearningPaths = async () => {
       try {
-        const response = await axios.get(`/api/${token.id}/lp`);
+        const response = await axios.get(`http://localhost:8080/${token.id}/lp`);
         setData(response.data);
       } catch (error) {
         console.log(error);
@@ -46,7 +46,7 @@ const LearningPaths = () => {
   return (
     <div className="grid grid-cols-3 gap-4 p-8 bg-gray-800 h-[calc(100vh-48px)] overflow-y-auto">
       {data?.learningPaths.map((lp) => (
-        <div key={lp._id} className="col-span-3">
+        <div key={lp._id} className="lp-tile col-span-3">
           {isPathUnLocked(lp.title) ? (
             <div className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:to-cyan-600 p-8 text-white rounded-md cursor-pointer">
               <div onClick={() => handleUnlockedLearningPathClick(lp)}>

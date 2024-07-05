@@ -12,7 +12,7 @@ const NewReplyModal = ({ topicId, title, parentType, parentMessageId, parentMess
     if (token.id && message && parentMessageId && parentMessageCreator && parentMessage) {
       try {
         const payload = { userId: token.id, message, parentMessageId, parentMessageCreator, parentMessage };
-        const response = await axios.post(`/api/${topicId}/reply`, payload);
+        const response = await axios.post(`http://localhost:8080/${topicId}/reply`, payload);
         updateFeed(response.data);
         onClose();
       } catch (error) {

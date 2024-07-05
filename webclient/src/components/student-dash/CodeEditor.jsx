@@ -92,7 +92,8 @@ const CodeEditor = ({ data }) => {
               question: data.challenge,
               code: codeToSubmit,
             };
-      const response = await axios.post(`/api/${endpoint}`, payload);
+      // deployed version - http://localhost:8080/ replaced with /api/ (see dispatch.yaml)
+      const response = await axios.post(`http://localhost:8080/${endpoint}`, payload);
       setResponseMessage(response.data.message === "success" ? "Code submitted successfully!" : "Code submission failed.");
     } catch (error) {
       setResponseMessage("Error submitting code.");

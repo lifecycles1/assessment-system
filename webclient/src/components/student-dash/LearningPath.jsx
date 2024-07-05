@@ -34,8 +34,8 @@ const LearningPath = () => {
 
   return (
     <div className="grid grid-cols-3 gap-4 p-8 bg-gray-800 h-[calc(100vh-48px)] overflow-y-auto">
-      {data?.learningPath?.challenges.map((challenge) => (
-        <div key={challenge._id} className="col-span-3">
+      {data?.learningPath?.challenges.map((challenge, index) => (
+        <div key={challenge._id} className="challenge-tile col-span-3">
           {isChallengeUnlocked(challenge._id) ? (
             <div className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:to-cyan-600 p-8 text-white rounded-md cursor-pointer">
               <div onClick={() => handleUnlockedChallengeClick(challenge)}>

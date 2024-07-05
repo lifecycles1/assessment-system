@@ -16,6 +16,7 @@ import Preferences from "./components/forum/profile/Preferences";
 import NavigationBar from "./components/NavigationBar";
 import Assessments from "./components/Assessments";
 import { AuthProvider } from "./context/AuthContext";
+import Settings from "./pages/Settings";
 
 function App() {
   return (
@@ -44,6 +45,8 @@ function App() {
               <Route path="badges" element={<Badges />} />
               <Route path="preferences" element={<Preferences />} />
             </Route>
+            {/* settings */}
+            <Route path="settings" element={<Settings />} />
             {/*  */}
           </Route>
         </Routes>

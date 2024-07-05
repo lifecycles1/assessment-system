@@ -4,3 +4,4 @@ server/node_modules
 server/package-lock.json
 server/.env
 server/gcs-key.json
+deployed-client

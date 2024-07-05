@@ -39,7 +39,7 @@ const TopicList = ({ category }) => {
     if (!token) return;
     const fetchTopics = async () => {
       try {
-        const response = await axios.get(`/api/topics/${category}?userId=${token.id}`);
+        const response = await axios.get(`http://localhost:8080/topics/${category}?userId=${token.id}`);
         setTopics(response.data);
       } catch (error) {
         console.error("Error fetching topics:", error);

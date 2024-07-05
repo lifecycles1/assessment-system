@@ -51,14 +51,6 @@ const getTopics = async (req, res) => {
     const forumProfile = await ForumProfile.findOne({ user: req.query.userId });
     forumProfile?.updateDaysVisited();
 
-    // CONDITION RUNS ONLY ONCE PER USER TO ASSIGN A FORUM PROFILE
-    if (!forumProfile) {
-      // creates a forum profile object for the user if one doesn't exist
-      // to track forum statistics (days visited, read time, etc).
-      const newForumProfile = new ForumProfile({ user: req.query.userId });
-      await newForumProfile.save();
-    }
-
     return res.status(200).json(topics);
   } catch (error) {
     console.log(error);

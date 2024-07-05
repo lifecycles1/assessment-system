@@ -20,7 +20,8 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post("/api/signin", { email, password });
+      // deployed version - http://localhost:8080/ replaced with /api/ (see dispatch.yaml)
+      const response = await axios.post("http://localhost:8080/signin", { email, password });
       const { data } = response;
       if (data.token) {
         login(data.token);

@@ -8,27 +8,30 @@ app.use(express.json());
 app.use(cors());
 
 // Database
-const connectToMongoDB = require("./dbconnection/mongodb");
+const { connectToMongoDB } = require("./dbconnection/mongodb");
 connectToMongoDB();
 
 // Routes
 const authRoutes = require("./routes/auth");
 const assessmentRoutes = require("./routes/assessments");
-app.use("/api", authRoutes);
-app.use("/api", assessmentRoutes);
+// deployed version - all routes use /api prefix e.g. app.use ("/api", authRoutes); configured from dispatch.yaml
+app.use(authRoutes);
+app.use(assessmentRoutes);
 // learning paths routes
 const learningPathsRoutes = require("./routes/learningPaths");
-app.use("/api", learningPathsRoutes);
+app.use(learningPathsRoutes);
 // forum routes
 const topicRoutes = require("./routes/forum/topics");
 const replyRoutes = require("./routes/forum/replies");
 const likeRoutes = require("./routes/forum/likes");
 const profileRoutes = require("./routes/forum/profile");
-app.use("/api", topicRoutes);
-app.use("/api", replyRoutes);
-app.use("/api", likeRoutes);
-app.use("/api", profileRoutes);
+app.use(topicRoutes);
+app.use(replyRoutes);
+app.use(likeRoutes);
+app.use(profileRoutes);
 
-app.listen(8080, () => {
+const server = app.listen(8080, () => {
   console.log(`connected on port 8080`);
 });
+
+module.exports = { app, server };

@@ -2,6 +2,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const ForumProfile = require("../models/forum/profile");
 
 // Signup controller
 const signup = async (req, res) => {
@@ -15,6 +16,7 @@ const signup = async (req, res) => {
     // Hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
+
     newUser.password = hashedPassword;
     // Save the user to the database
     await newUser.save();
@@ -29,6 +31,13 @@ const signup = async (req, res) => {
       },
       process.env.SECRET_KEY
     );
+
+    // CONDITION RUNS ONLY ONCE PER USER TO ASSIGN A FORUM PROFILE
+    // creates a forum profile object for the user
+    // to track forum statistics (days visited, read time, etc).
+    const newForumProfile = new ForumProfile({ user: newUser._id });
+    await newForumProfile.save();
+
     // Send the token to the client
     res.status(201).json({ message: "User created successfully", token });
   } catch (error) {

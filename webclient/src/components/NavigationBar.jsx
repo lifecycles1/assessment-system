@@ -51,7 +51,7 @@ const NavigationBar = () => {
       {token && (
         <div className="relative">
           <button onClick={() => setIsOpen((prev) => !prev)} className="flex items-center space-x-2 text-white hover:underline">
-            <img src="https://via.placeholder.com/40" alt="User" className="w-8 h-8 rounded-full" title={token?.email?.split("@")[0]} />
+            <img src="https://via.placeholder.com/40" alt="profile picture" className="w-8 h-8 rounded-full" title={token?.email?.split("@")[0]} />
           </button>
           {isOpen && <ProfileDropdown />}
         </div>
