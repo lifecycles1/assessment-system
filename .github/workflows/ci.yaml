@@ -33,6 +33,7 @@ jobs:
           npm test
         env:
           GCLOUD_STORAGE_BUCKET: ${{ secrets.GCLOUD_STORAGE_BUCKET }}
+          LOCAL_MONGODB_URI: ${{ secrets.LOCAL_MONGODB_URI }}
 
   frontend:
     runs-on: ubuntu-latest

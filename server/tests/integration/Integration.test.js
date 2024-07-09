@@ -20,12 +20,12 @@ describe("Backend Integration Tests", () => {
     server.close();
   });
 
-  test.skip("User registration", async () => {
+  test("User registration", async () => {
     const response = await request(app).post("/signup").send({ email: "testuser8@example.com", password: "123", role: "student" }).expect("Content-Type", /json/).expect(201);
     expect(response.body).toHaveProperty("message", "User created successfully");
   });
 
-  test.skip("User login", async () => {
+  test("User login", async () => {
     await login();
   });
 
@@ -60,7 +60,7 @@ describe("Backend Integration Tests", () => {
     expect(response.body).toBeInstanceOf(Object);
   });
 
-  test.skip("Create a new forum topic", async () => {
+  test("Create a new forum topic", async () => {
     // login and get the token
     const userId = await login();
     // create a new topic
@@ -68,7 +68,7 @@ describe("Backend Integration Tests", () => {
     expect(topicResponse.body).toHaveProperty("_id");
   });
 
-  test.skip("Create a new forum reply", async () => {
+  test("Create a new forum reply", async () => {
     // login and get the token
     const userId = await login();
     // fetch the forum topics
