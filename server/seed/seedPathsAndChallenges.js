@@ -4,8 +4,6 @@ const LearningPath = require("../models/learningPath");
 const { challengeData } = require("./challenges");
 const { learningPathsData } = require("./learningPaths");
 
-mongoose.connect("mongodb://127.0.0.1:27017/code-assessment");
-
 async function seedChallenges() {
   try {
     await Challenge.deleteMany();
@@ -27,20 +25,22 @@ async function seedLearningPaths(challenges) {
       return { ...pathData, challenges: pathChallenges };
     });
 
-    await LearningPath.insertMany(learningPaths);
+    await LearningPath.insertMany(learningPaths, { ordered: true });
   } catch (error) {
     console.error("Error seeding learning paths:", error);
-  } finally {
-    mongoose.connection.close();
   }
 }
 
 async function seedDatabase() {
+  mongoose.connect("mongodb://127.0.0.1:27017/code-assessment");
   try {
     const challenges = await seedChallenges();
     await seedLearningPaths(challenges);
   } catch (error) {
     console.error("Error seeding database:", error);
+  } finally {
+    mongoose.disconnect();
+    console.log(mongoose.connection.readyState); // disconnecting = 3
   }
 }
 

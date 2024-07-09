@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(cors());
 
 // Database
-const { connectToMongoDB } = require("./dbconnection/mongodb");
+const { connectToMongoDB, disconnectFromMongoDB } = require("./dbconnection/mongodb");
 connectToMongoDB();
 
 // Routes
@@ -32,6 +32,13 @@ app.use(profileRoutes);
 
 const server = app.listen(8080, () => {
   console.log(`connected on port 8080`);
+});
+
+[`exit`, `SIGINT`, `SIGUSR1`, `SIGUSR2`, `uncaughtException`, `SIGTERM`].forEach((signal) => {
+  process.on(signal, () => {
+    disconnectFromMongoDB();
+    server.close();
+  });
 });
 
 module.exports = { app, server };

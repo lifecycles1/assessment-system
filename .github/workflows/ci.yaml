@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [20.x]
 
     steps:
       - name: Checkout repository
@@ -34,13 +34,14 @@ jobs:
         env:
           GCLOUD_STORAGE_BUCKET: ${{ secrets.GCLOUD_STORAGE_BUCKET }}
           LOCAL_MONGODB_URI: ${{ secrets.LOCAL_MONGODB_URI }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
   frontend:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [20.x]
 
     steps:
       - name: Checkout repository

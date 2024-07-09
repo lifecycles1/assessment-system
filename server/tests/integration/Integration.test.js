@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 
 const login = async () => {
   // login and get the token
-  const loginResponse = await request(app).post("/signin").send({ email: "testuser8@example.com", password: "123" }).expect("Content-Type", /json/).expect(200);
+  const loginResponse = await request(app).post("/signin").send({ email: "testuser9@example.com", password: "123" }).expect("Content-Type", /json/).expect(200);
   expect(loginResponse.body).toHaveProperty("token");
   const token = loginResponse.body.token;
   const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
@@ -21,7 +21,7 @@ describe("Backend Integration Tests", () => {
   });
 
   test("User registration", async () => {
-    const response = await request(app).post("/signup").send({ email: "testuser8@example.com", password: "123", role: "student" }).expect("Content-Type", /json/).expect(201);
+    const response = await request(app).post("/signup").send({ email: "testuser9@example.com", password: "123", role: "student" }).expect("Content-Type", /json/).expect(201);
     expect(response.body).toHaveProperty("message", "User created successfully");
   });
 
