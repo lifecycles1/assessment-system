@@ -1,5 +1,6 @@
 webclient/node_modules
 webclient/package-lock.json
+webclient/.env.production
 server/node_modules
 server/package-lock.json
 server/.env

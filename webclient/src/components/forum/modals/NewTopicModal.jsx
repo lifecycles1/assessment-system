@@ -13,7 +13,7 @@ const NewTopicModal = ({ onClose, updateFeed }) => {
     if (token.id && title && message && category) {
       try {
         const payload = { userId: token.id, title, message, category };
-        const response = await axios.post("http://localhost:8080/createTopic", payload);
+        const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/createTopic`, payload);
         updateFeed(response.data);
         onClose();
       } catch (error) {

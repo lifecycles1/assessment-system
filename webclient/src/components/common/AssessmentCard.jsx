@@ -91,7 +91,7 @@ const AssessmentCard = ({ listType, assessment, setAssessments }) => {
     };
 
     try {
-      await axios.put(`http://localhost:8080/teacher-assessments/mark/${_id}`, updatedFields);
+      await axios.put(`${import.meta.env.VITE_API_BASE_URL}/teacher-assessments/mark/${_id}`, updatedFields);
 
       // if teacher marks assessment as "completed", filtering out the updated assessment from the UI state will be sufficient
       // because the backend doesn't return assessments with a "completed" status

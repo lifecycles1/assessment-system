@@ -141,7 +141,7 @@ const Topic = () => {
     const fetchTopic = async () => {
       const topicId = routeParams.id;
       try {
-        const response = await axios.get(`http://localhost:8080/topics/${category}/${topicId}`, {
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/topics/${category}/${topicId}`, {
           params: { userId: token.id },
         });
         setTopic(response.data);
@@ -158,7 +158,7 @@ const Topic = () => {
       const elapsedTimeInSeconds = Math.floor((endTime - startTime) / 1000);
       const payload = { time: elapsedTimeInSeconds };
       try {
-        await axios.put(`http://localhost:8080/profile/${token.id}/read-time`, payload);
+        await axios.put(`${import.meta.env.VITE_API_BASE_URL}/profile/${token.id}/read-time`, payload);
       } catch (error) {
         console.error("Error sending elapsed reading time:", error);
       }
@@ -260,7 +260,7 @@ ReplyTile.propTypes = {
 
 const handleLike = async (type, messageId, setLikes, userId) => {
   try {
-    const response = await axios.post(`http://localhost:8080/${messageId}/like`, { type, userId });
+    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/${messageId}/like`, { type, userId });
     setLikes(response.data.likes);
   } catch (error) {
     console.error("Error toggling like:", error);

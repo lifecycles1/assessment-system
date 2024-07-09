@@ -93,7 +93,7 @@ const CodeEditor = ({ data }) => {
               code: codeToSubmit,
             };
       // deployed version - http://localhost:8080/ replaced with /api/ (see dispatch.yaml)
-      const response = await axios.post(`http://localhost:8080/${endpoint}`, payload);
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/${endpoint}`, payload);
       setResponseMessage(response.data.message === "success" ? "Code submitted successfully!" : "Code submission failed.");
     } catch (error) {
       setResponseMessage("Error submitting code.");
