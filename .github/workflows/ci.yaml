@@ -31,6 +31,8 @@ jobs:
         run: |
           cd server
           npm test
+        env:
+          GCLOUD_STORAGE_BUCKET: ${{ secrets.GCLOUD_STORAGE_BUCKET }}
 
   frontend:
     runs-on: ubuntu-latest
