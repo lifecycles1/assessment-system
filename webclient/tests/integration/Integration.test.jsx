@@ -1,6 +1,10 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import App from "../../src/App";
 
+// all tests are included in github actions workflow file to run on every push to the repository
+// in github actions environment, the frontend does not have access to the backend
+// we override the VITE_API_BASE_URL env var with VITE_PROD_API_URL_FULL defined in github secrets
+// this allows the tests to run against the deployed backend which uses MongoDB Atlas
 test("student logs in successfully, navigates between all main routes, and logs out", async () => {
   // 1 - render app
   const wrapper = render(<App />);
