@@ -35,6 +35,7 @@ jobs:
           GCLOUD_STORAGE_BUCKET: ${{ secrets.GCLOUD_STORAGE_BUCKET }}
           LOCAL_MONGODB_URI: ${{ secrets.LOCAL_MONGODB_URI }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          REFRESH_KEY: ${{ secrets.REFRESH_KEY }}
 
   frontend:
     runs-on: ubuntu-latest
