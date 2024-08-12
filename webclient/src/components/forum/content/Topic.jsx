@@ -8,10 +8,10 @@ import { updateFeed, calculateTimeDifference } from "../../../utils/forum/common
 import leftArrow from "../../../assets/left-arrow.svg";
 import heartOutline from "../../../assets/heart-outline.svg";
 import heartSolid from "../../../assets/heart-solid.svg";
-import { useAuth } from "../../../hooks/useAuthContext";
+import useAuth from "../../../hooks/useAuth";
 
 const MessageTile = ({ topic, onReply }) => {
-  const { token } = useAuth();
+  const { decoded } = useAuth();
   const [likes, setLikes] = useState([]);
 
   useEffect(() => {
@@ -32,9 +32,9 @@ const MessageTile = ({ topic, onReply }) => {
           <div></div>
           <div className="flex items-center">
             <div className="flex px-4 py-2 space-x-2 transition duration-300 ease-in-out hover:bg-gray-200">
-              {likes?.length > 0 && <div title={generateLikeCounterTitle(likes, token.id)}>{likes.length}</div>}
-              <button onClick={() => handleLike("topic", topic._id, setLikes, token.id)} className="">
-                {likes?.includes(token?.id) ? <img src={heartSolid} alt="Heart Solid" className="w-4 h-4" title="undo like" /> : <img src={heartOutline} alt="Heart Outline" className="w-4 h-4" title="like this post" />}
+              {likes?.length > 0 && <div title={generateLikeCounterTitle(likes, decoded.id)}>{likes.length}</div>}
+              <button onClick={() => handleLike("topic", topic._id, setLikes, decoded.id)} className="">
+                {likes?.includes(decoded?.id) ? <img src={heartSolid} alt="Heart Solid" className="w-4 h-4" title="undo like" /> : <img src={heartOutline} alt="Heart Outline" className="w-4 h-4" title="like this post" />}
               </button>
             </div>
             <button onClick={() => onReply("topic", topic._id, topic.creator._id, topic.message)} className="flex items-center space-x-2 px-4 py-2 text-gray-400 transition duration-300 ease-in-out hover:bg-gray-200">
@@ -87,7 +87,7 @@ const MessageTile = ({ topic, onReply }) => {
 };
 
 const ReplyTile = ({ reply, onReply }) => {
-  const { token } = useAuth();
+  const { decoded } = useAuth();
   const [likes, setLikes] = useState(reply.likes);
 
   return (
@@ -100,9 +100,9 @@ const ReplyTile = ({ reply, onReply }) => {
           <div></div>
           <div className="flex items-center">
             <div className="flex px-4 py-2 space-x-2 transition duration-300 ease-in-out hover:bg-gray-200">
-              {likes?.length > 0 && <div title={generateLikeCounterTitle(likes, token.id)}>{likes.length}</div>}
-              <button onClick={() => handleLike("reply", reply._id, setLikes, token.id)} className="">
-                {likes?.includes(token?.id) ? <img src={heartSolid} alt="Heart Solid" className="w-4 h-4" title="undo like" /> : <img src={heartOutline} alt="Heart Outline" className="w-4 h-4" title="like this post" />}
+              {likes?.length > 0 && <div title={generateLikeCounterTitle(likes, decoded.id)}>{likes.length}</div>}
+              <button onClick={() => handleLike("reply", reply._id, setLikes, decoded.id)} className="">
+                {likes?.includes(decoded?.id) ? <img src={heartSolid} alt="Heart Solid" className="w-4 h-4" title="undo like" /> : <img src={heartOutline} alt="Heart Outline" className="w-4 h-4" title="like this post" />}
               </button>
             </div>
             <button onClick={() => onReply("reply", reply._id, reply.creator._id, reply.message, reply.creator.email, reply.creator.picture)} className="flex items-center space-x-2 px-4 py-2 text-gray-400 transition duration-300 ease-in-out hover:bg-gray-200">
@@ -117,7 +117,7 @@ const ReplyTile = ({ reply, onReply }) => {
 };
 
 const Topic = () => {
-  const { token } = useAuth();
+  const { decoded } = useAuth();
   const routeParams = useParams();
   const navigate = useNavigate();
   const [category, setCategory] = useState(localStorage.getItem("selectedCategory"));
@@ -137,12 +137,12 @@ const Topic = () => {
   const [startTime] = useState(new Date());
 
   useEffect(() => {
-    if (!token) return;
+    if (!decoded) return;
     const fetchTopic = async () => {
       const topicId = routeParams.id;
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/topics/${category}/${topicId}`, {
-          params: { userId: token.id },
+          params: { userId: decoded.id },
         });
         setTopic(response.data);
         setReplies(response.data.replies);
@@ -158,7 +158,7 @@ const Topic = () => {
       const elapsedTimeInSeconds = Math.floor((endTime - startTime) / 1000);
       const payload = { time: elapsedTimeInSeconds };
       try {
-        await axios.put(`${import.meta.env.VITE_API_BASE_URL}/profile/${token.id}/read-time`, payload);
+        await axios.put(`${import.meta.env.VITE_API_BASE_URL}/profile/${decoded.id}/read-time`, payload);
       } catch (error) {
         console.error("Error sending elapsed reading time:", error);
       }
@@ -172,7 +172,7 @@ const Topic = () => {
       // send elapsed reading time when user "navigates away from the topic page"
       sendElapsedReadingTime();
     };
-  }, [category, routeParams.id, startTime, token]);
+  }, [category, routeParams.id, startTime, decoded]);
 
   useEffect(() => {
     if (replies.length === 0) return;

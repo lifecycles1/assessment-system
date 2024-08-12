@@ -2,10 +2,13 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const corsOptions = require("./config/corsOptions");
+const cookieParser = require("cookie-parser");
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
+app.use(cookieParser());
 
 // Database
 const { connectToMongoDB, disconnectFromMongoDB } = require("./dbconnection/mongodb");

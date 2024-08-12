@@ -4,7 +4,7 @@ const ChallengeProgress = require("../models/challengeProgress");
 
 const getLearningPaths = async (req, res) => {
   try {
-    const pathsAndProgress = await LearningPath.loadPathsAndProgress(req.params.userId);
+    const pathsAndProgress = await LearningPath.loadPathsAndProgress(req.user);
     return res.status(200).json(pathsAndProgress);
   } catch (error) {
     console.log(error);

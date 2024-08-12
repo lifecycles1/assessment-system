@@ -1,35 +1,19 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuthContext";
+import { useGetLearningPathsQuery } from "../../features/learningPaths/learningPathsApiSlice";
 
 const LearningPaths = () => {
-  const { token } = useAuth();
   const navigate = useNavigate();
-
-  const [data, setData] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const { data: learningPathsData, error } = useGetLearningPathsQuery();
 
-  useEffect(() => {
-    if (!token) return;
-    const fetchLearningPaths = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/${token.id}/lp`);
-        setData(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchLearningPaths();
-  }, [token]);
-
-  const isPathUnLocked = (title) => data?.pathProgress.some((progress) => progress.learningPath === title);
+  const isPathUnLocked = (title) => learningPathsData?.pathProgress.some((progress) => progress.learningPath === title);
 
   const toggleExpand = () => setIsExpanded((prevState) => !prevState);
 
   const handleUnlockedLearningPathClick = (clickedLearningPath) => {
     // Find the progress for the clicked learning path
-    const clickedPathProgress = data?.pathProgress.find((progress) => progress.learningPath === clickedLearningPath.title);
+    const clickedPathProgress = learningPathsData?.pathProgress.find((progress) => progress.learningPath === clickedLearningPath.title);
 
     navigate(clickedLearningPath.title.toLowerCase(), {
       state: {
@@ -42,10 +26,11 @@ const LearningPaths = () => {
     });
   };
 
-  // TO-DO: change all these conditional renders to something better
   return (
+    // TO-DO: change all these conditional renders to something better
     <div className="grid grid-cols-3 gap-4 p-8 bg-gray-800 h-[calc(100vh-48px)] overflow-y-auto">
-      {data?.learningPaths.map((lp) => (
+      {error && <div className="table h-2 text-center col-span-2 text-red-500 bg-gray-200 p-4 rounded-md">{error?.data?.message}</div>}
+      {learningPathsData?.learningPaths.map((lp) => (
         <div key={lp._id} className="lp-tile col-span-3">
           {isPathUnLocked(lp.title) ? (
             <div className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:to-cyan-600 p-8 text-white rounded-md cursor-pointer">

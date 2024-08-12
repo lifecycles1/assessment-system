@@ -7,10 +7,10 @@ import "ace-builds/src-noconflict/theme-monokai";
 import AceEditor from "react-ace";
 import axios from "axios";
 import LoadingButton from "../common/LoadingButton";
-import { useAuth } from "../../hooks/useAuthContext";
+import useAuth from "../../hooks/useAuth";
 
 const CodeEditor = ({ data }) => {
-  const { token } = useAuth();
+  const { decoded } = useAuth();
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
   const paramNames = extractParameters(data.challenge.question, data.challenge.example);
   const paramArray = paramNames.split(",");
@@ -79,7 +79,7 @@ const CodeEditor = ({ data }) => {
         data.challenge.type === "learningPath"
           ? // learning path challenge
             {
-              userId: token.id,
+              userId: decoded.id,
               pathProgressId: data.pathProgressId,
               challengeId: data.challenge._id,
               language: selectedLanguage,
@@ -87,7 +87,7 @@ const CodeEditor = ({ data }) => {
             }
           : // assessment challenge
             {
-              email: token.email,
+              email: decoded.email,
               language: selectedLanguage,
               question: data.challenge,
               code: codeToSubmit,

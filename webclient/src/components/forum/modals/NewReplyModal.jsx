@@ -2,16 +2,16 @@ import axios from "axios";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import leftArrow from "../../../assets/left-arrow.svg";
-import { useAuth } from "../../../hooks/useAuthContext";
+import useAuth from "../../../hooks/useAuth";
 
 const NewReplyModal = ({ topicId, title, parentType, parentMessageId, parentMessageCreator, parentMessage, parentMessageCreatorEmail, parentMessageCreatorPicture, onClose, updateFeed }) => {
-  const { token } = useAuth();
+  const { decoded } = useAuth();
   const [message, setMessage] = useState("");
 
   const handleSubmit = async () => {
-    if (token.id && message && parentMessageId && parentMessageCreator && parentMessage) {
+    if (decoded.id && message && parentMessageId && parentMessageCreator && parentMessage) {
       try {
-        const payload = { userId: token.id, message, parentMessageId, parentMessageCreator, parentMessage };
+        const payload = { userId: decoded.id, message, parentMessageId, parentMessageCreator, parentMessage };
         const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/${topicId}/reply`, payload);
         updateFeed(response.data);
         onClose();

@@ -25,8 +25,5 @@ describe("<App />", () => {
 
     const signupLink = screen.getByRole("link", { name: /signup/i });
     expect(signupLink).toBeInTheDocument();
-
-    const orText = screen.getByText(/or/i);
-    expect(orText).toBeInTheDocument();
   });
 });

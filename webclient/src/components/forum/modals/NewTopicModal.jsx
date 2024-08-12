@@ -1,18 +1,18 @@
 import axios from "axios";
 import PropTypes from "prop-types";
 import { useState } from "react";
-import { useAuth } from "../../../hooks/useAuthContext";
+import useAuth from "../../../hooks/useAuth";
 
 const NewTopicModal = ({ onClose, updateFeed }) => {
-  const { token } = useAuth();
+  const { decoded } = useAuth();
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("general");
   const [message, setMessage] = useState("");
 
   const handleSubmit = async () => {
-    if (token.id && title && message && category) {
+    if (decoded.id && title && message && category) {
       try {
-        const payload = { userId: token.id, title, message, category };
+        const payload = { userId: decoded.id, title, message, category };
         const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/createTopic`, payload);
         updateFeed(response.data);
         onClose();

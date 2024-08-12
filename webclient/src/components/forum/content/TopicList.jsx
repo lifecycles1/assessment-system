@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import NewTopicModal from "../modals/NewTopicModal";
 import { updateFeed } from "../../../utils/forum/common";
-import { useAuth } from "../../../hooks/useAuthContext";
+import useAuth from "../../../hooks/useAuth";
 
 const TopicTile = ({ topic }) => {
   return (
@@ -30,23 +30,23 @@ const TopicTile = ({ topic }) => {
 };
 
 const TopicList = ({ category }) => {
-  const { token } = useAuth();
+  const { decoded } = useAuth();
   const [topics, setTopics] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState("desc");
 
   useEffect(() => {
-    if (!token) return;
+    if (!decoded) return;
     const fetchTopics = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/topics/${category}?userId=${token.id}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/topics/${category}?userId=${decoded.id}`);
         setTopics(response.data);
       } catch (error) {
         console.error("Error fetching topics:", error);
       }
     };
     if (category.length > 0) fetchTopics();
-  }, [category, token]);
+  }, [category, decoded]);
 
   const sortTopics = (type) => {
     // toggle sort order (type === "latest" is not toggleable)

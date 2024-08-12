@@ -2,20 +2,20 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import SideBar from "../components/forum/SideBar";
 import axios from "axios";
-import { useAuth } from "../hooks/useAuthContext";
+import useAuth from "../hooks/useAuth";
 
 const Profile = () => {
-  const { token } = useAuth();
+  const { decoded } = useAuth();
   const navigate = useNavigate();
   const [category, setCategory] = useState(localStorage.getItem("selectedCategory"));
   const [selectedTab, setSelectedTab] = useState("summary");
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    if (!token) return;
+    if (!decoded) return;
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/profile/${token.id}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/profile/${decoded.id}`);
         console.log("profile page data", response.data);
         setUserData(response.data);
       } catch (error) {
@@ -23,7 +23,7 @@ const Profile = () => {
       }
     };
     fetchUser();
-  }, [token]);
+  }, [decoded]);
 
   const handleTabClick = (tab) => {
     setSelectedTab((prev) => (prev === tab ? prev : tab));
@@ -44,10 +44,10 @@ const Profile = () => {
         <div className="flex space-x-7 border-b pb-4">
           <img src="https://via.placeholder.com/150" alt="User" className="w-16 h-16 rounded-full" />
           <div className="mt-1">
-            <div className="text-xl font-bold ">{token?.email.split("@")[0]}</div>
+            <div className="text-xl font-bold ">{decoded?.email.split("@")[0]}</div>
             <div>
               <span className="text-gray-500">Joined </span>
-              {new Date(token?.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+              {new Date(decoded?.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
             </div>
           </div>
         </div>

@@ -15,7 +15,7 @@ test("student logs in successfully, navigates between all main routes, and logs 
   const emailInput = screen.getByPlaceholderText(/email/i);
   const passwordInput = screen.getByPlaceholderText(/password/i);
   const submitButton = screen.getByRole("button", { name: /login/i });
-  fireEvent.change(emailInput, { target: { value: "todor" } });
+  fireEvent.change(emailInput, { target: { value: "sdfsd@email.com" } });
   fireEvent.change(passwordInput, { target: { value: "123" } });
   fireEvent.click(submitButton);
   // expect user to be redirected to dashboard

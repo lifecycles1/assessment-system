@@ -1,36 +1,39 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import LoadingButton from "../components/common/LoadingButton";
-import { useAuth } from "../hooks/useAuthContext";
+import { useSignupMutation } from "../features/auth/authApiSlice";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../features/auth/authSlice";
 
 const Signup = () => {
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [signup, { isLoading }] = useSignupMutation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login, token } = useAuth();
-
-  useEffect(() => {
-    if (token) navigate("dashboard");
-  }, [navigate, token]);
+  const [successMsg, setSuccessMsg] = useState("");
 
   const submit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/signup`, { email, password, role });
-      const { data } = response;
-      if (data.token) {
-        login(data.token);
-      } else {
-        setError("User registration failed. Email may already exist.");
-      }
+      const { token } = await signup({ email, password, role }).unwrap();
+      // dispatch(setCredentials({ token }));
+      setEmail("");
+      setPassword("");
+      setRole("");
+      setSuccessMsg("Account created successfully. You can now login.");
     } catch (error) {
-      setError("An error occurred while creating an account.");
       console.error(error);
+      if (!err.status) {
+        setError("No Server Response");
+      } else if (err.status === 409) {
+        setError(`Duplicate: ${err.data?.message}`);
+      } else {
+        setError(err.data?.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -61,6 +64,7 @@ const Signup = () => {
             <LoadingButton type="submit" loading={loading} className="w-full px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300" text="Signup" />
           </div>
           {error && <div className="text-red-500 text-center">{error}</div>}
+          {successMsg && <div className="text-green-500 text-center">{successMsg}</div>}
         </form>
         <p className="text-center">OR</p>
         <div className="text-center">

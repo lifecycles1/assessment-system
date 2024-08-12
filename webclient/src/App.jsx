@@ -15,13 +15,14 @@ import Badges from "./components/forum/profile/Badges";
 import Preferences from "./components/forum/profile/Preferences";
 import NavigationBar from "./components/NavigationBar";
 import Assessments from "./components/Assessments";
-import { AuthProvider } from "./context/AuthContext";
 import Settings from "./pages/Settings";
+import { store } from "./app/store";
+import { Provider } from "react-redux";
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
+    <Provider store={store}>
+      <Router>
         <NavigationBar />
         <Routes>
           <Route path="/" element={<Login />} />
@@ -50,8 +51,8 @@ function App() {
             {/*  */}
           </Route>
         </Routes>
-      </AuthProvider>
-    </Router>
+      </Router>
+    </Provider>
   );
 }
 

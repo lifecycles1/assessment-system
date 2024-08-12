@@ -1,11 +1,11 @@
 import StudentDashboard from "../components/student-dash/StudentDashboard";
 import TeacherDashboard from "../components/teacher-dash/TeacherDashboard";
-import { useAuth } from "../hooks/useAuthContext";
+import useAuth from "../hooks/useAuth";
 
 const Dashboard = () => {
-  const { token } = useAuth();
+  const { decoded } = useAuth();
 
-  return <div>{token && <div>{token?.role === "teacher" ? <TeacherDashboard /> : <StudentDashboard />}</div>}</div>;
+  return <div>{decoded && <div>{decoded?.role === "teacher" ? <TeacherDashboard /> : <StudentDashboard />}</div>}</div>;
 };
 
 export default Dashboard;

@@ -1,11 +1,11 @@
 import TeacherAssessments from "./teacher-dash/TeacherAssessments";
 import StudentAssessments from "./student-dash/StudentAssessments";
-import { useAuth } from "../hooks/useAuthContext";
+import useAuth from "../hooks/useAuth";
 
 function Assessments() {
-  const { token } = useAuth();
+  const { decoded } = useAuth();
 
-  return token?.role === "teacher" ? <TeacherAssessments /> : <StudentAssessments />;
+  return decoded?.role === "teacher" ? <TeacherAssessments /> : <StudentAssessments />;
 }
 
 export default Assessments;
