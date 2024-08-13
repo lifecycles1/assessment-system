@@ -4,12 +4,12 @@ const ForumProfile = require("../../models/forum/profile");
 
 const addReply = async (req, res) => {
   try {
-    const { userId, message, parentMessageId, parentMessageCreator, parentMessage } = req.body;
+    const { message, parentMessageId, parentMessageCreator, parentMessage } = req.body;
 
     const topic = await Topic.findById(req.params.id);
     if (!topic) return res.status(404).json({ message: "Topic not found" });
     const newReply = new Reply({
-      creator: userId,
+      creator: req.user,
       message,
       parentTopicId: topic._id,
       parentMessageId,
@@ -18,7 +18,7 @@ const addReply = async (req, res) => {
     });
     await newReply.save();
 
-    const forumProfile = await ForumProfile.findOne({ user: userId });
+    const forumProfile = await ForumProfile.findOne({ user: req.user });
     forumProfile.incrementReplyCount();
 
     await newReply.populate({ path: "creator", select: "email picture" });

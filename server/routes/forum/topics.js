@@ -7,6 +7,6 @@ router.post("/createTopic", createTopic);
 // Get all topics
 router.get("/topics/:category", getTopics);
 // Get a single topic
-router.get("/topics/:category/:id", getTopic);
+router.get("/topics/:category/:topicId", getTopic);
 
 module.exports = router;

@@ -3,10 +3,10 @@ const Reply = require("../../models/forum/reply");
 
 const toggleLike = async (req, res) => {
   try {
-    const { type, userId } = req.body;
+    const { type } = req.body;
     const Model = type === "topic" ? Topic : Reply;
     const doc = await Model.findById(req.params.id);
-    doc.toggleLike(userId);
+    doc.toggleLike(req.user);
     return res.status(200).json(doc);
   } catch (error) {
     console.log(error);

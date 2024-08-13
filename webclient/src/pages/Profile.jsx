@@ -1,29 +1,15 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SideBar from "../components/forum/SideBar";
-import axios from "axios";
 import useAuth from "../hooks/useAuth";
+import { useGetProfileQuery } from "../features/forum/profileApiSlice";
 
 const Profile = () => {
   const { decoded } = useAuth();
   const navigate = useNavigate();
   const [category, setCategory] = useState(localStorage.getItem("selectedCategory"));
   const [selectedTab, setSelectedTab] = useState("summary");
-  const [userData, setUserData] = useState(null);
-
-  useEffect(() => {
-    if (!decoded) return;
-    const fetchUser = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/profile/${decoded.id}`);
-        console.log("profile page data", response.data);
-        setUserData(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchUser();
-  }, [decoded]);
+  const { data: userData, error } = useGetProfileQuery();
 
   const handleTabClick = (tab) => {
     setSelectedTab((prev) => (prev === tab ? prev : tab));
@@ -41,6 +27,7 @@ const Profile = () => {
         <SideBar category={category} setCategory={handleCategoryChange} />
       </div>
       <div className="flex-1 ml-[260px] overflow-y-auto mt-8 p-12">
+        {error && <div className="table h-2 text-center col-span-2 text-red-500 bg-gray-200 p-4 rounded-md">{error?.data?.message}</div>}
         <div className="flex space-x-7 border-b pb-4">
           <img src="https://via.placeholder.com/150" alt="User" className="w-16 h-16 rounded-full" />
           <div className="mt-1">

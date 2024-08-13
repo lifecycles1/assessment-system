@@ -5,7 +5,6 @@ import { calculateTimeDifference } from "../../../utils/forum/common";
 const Summary = () => {
   const userData = useOutletContext();
   const lastTwoReplies = userData.replies.slice(-2).reverse();
-  console.log("userData", userData);
   return (
     <div>
       <div className="text-xl font-semibold py-6">STATS</div>

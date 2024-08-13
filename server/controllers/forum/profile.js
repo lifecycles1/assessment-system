@@ -4,9 +4,9 @@ const Reply = require("../../models/forum/reply");
 
 const getProfile = async (req, res) => {
   try {
-    const forumProfile = await ForumProfile.findOne({ user: req.params.id });
-    const topics = await Topic.find({ creator: req.params.id });
-    const replies = await Reply.find({ creator: req.params.id });
+    const forumProfile = await ForumProfile.findOne({ user: req.user });
+    const topics = await Topic.find({ creator: req.user });
+    const replies = await Reply.find({ creator: req.user });
 
     // populate the 2 most recent replies' parentTopicId fields with the topic's title and category
     // for display on the user profile page (Summary tab)
@@ -21,7 +21,7 @@ const getProfile = async (req, res) => {
 
 const incrementReadTime = async (req, res) => {
   try {
-    const forumProfile = await ForumProfile.findOne({ user: req.params.id });
+    const forumProfile = await ForumProfile.findOne({ user: req.user });
     forumProfile.incrementReadTime(req.body.time);
     return res.status(200).json();
   } catch (error) {

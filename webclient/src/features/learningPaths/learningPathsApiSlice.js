@@ -7,10 +7,12 @@ const initialState = learningPathsAdapter.getInitialState();
 export const learningPathsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getLearningPaths: builder.query({
-      query: () => "/lp",
-      validateStatus: (response, result) => {
-        return response.status === 200 && !result.isError;
-      },
+      query: () => ({
+        url: "/lp",
+        validateStatus: (response, result) => {
+          return response.status === 200 && !result.isError;
+        },
+      }),
       keepUnusedDataFor: 5,
       // transformResponse: (responseData) => {
       //   console.log("responseData", responseData);

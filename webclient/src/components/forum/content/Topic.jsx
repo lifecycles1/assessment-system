@@ -2,21 +2,19 @@ import PropTypes from "prop-types";
 import SideBar from "../SideBar";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import NewReplyModal from "../modals/NewReplyModal";
 import { updateFeed, calculateTimeDifference } from "../../../utils/forum/common";
 import leftArrow from "../../../assets/left-arrow.svg";
 import heartOutline from "../../../assets/heart-outline.svg";
 import heartSolid from "../../../assets/heart-solid.svg";
 import useAuth from "../../../hooks/useAuth";
+import { useGetTopicQuery, useHandleLikeMutation } from "../../../features/forum/topicsApiSlice";
+import { useSendElapsedReadingTimeMutation } from "../../../features/forum/profileApiSlice";
 
 const MessageTile = ({ topic, onReply }) => {
   const { decoded } = useAuth();
-  const [likes, setLikes] = useState([]);
-
-  useEffect(() => {
-    setLikes(topic.likes);
-  }, [topic.likes]);
+  const [likes, setLikes] = useState(topic.likes);
+  const [handleLike, { isLoading, error }] = useHandleLikeMutation();
 
   const topicCreationDate = calculateTimeDifference(topic.createdAt);
   const dateOfLastReply = topic.replies?.length > 0 ? calculateTimeDifference(topic.replies[topic.replies.length - 1]?.createdAt) : null;
@@ -31,9 +29,15 @@ const MessageTile = ({ topic, onReply }) => {
         <div className="flex justify-between mt-10">
           <div></div>
           <div className="flex items-center">
+            {error && (
+              <div className="text-red-500 mr-1">
+                <span>{error.status} : </span>
+                {error.data?.message || "An error occurred. Please try again later."}
+              </div>
+            )}
             <div className="flex px-4 py-2 space-x-2 transition duration-300 ease-in-out hover:bg-gray-200">
               {likes?.length > 0 && <div title={generateLikeCounterTitle(likes, decoded.id)}>{likes.length}</div>}
-              <button onClick={() => handleLike("topic", topic._id, setLikes, decoded.id)} className="">
+              <button onClick={() => handleLikes("topic", topic._id, handleLike, setLikes)} className="">
                 {likes?.includes(decoded?.id) ? <img src={heartSolid} alt="Heart Solid" className="w-4 h-4" title="undo like" /> : <img src={heartOutline} alt="Heart Outline" className="w-4 h-4" title="like this post" />}
               </button>
             </div>
@@ -89,6 +93,7 @@ const MessageTile = ({ topic, onReply }) => {
 const ReplyTile = ({ reply, onReply }) => {
   const { decoded } = useAuth();
   const [likes, setLikes] = useState(reply.likes);
+  const [handleLike, { isLoading, error }] = useHandleLikeMutation();
 
   return (
     <div id={reply._id} className="flex space-x-4 pr-20 w-full">
@@ -99,9 +104,15 @@ const ReplyTile = ({ reply, onReply }) => {
         <div className="flex justify-between mt-10">
           <div></div>
           <div className="flex items-center">
+            {error && (
+              <div className="text-red-500 mr-1">
+                <span>{error.status} : </span>
+                {error.data?.message || "An error occurred. Please try again later."}
+              </div>
+            )}
             <div className="flex px-4 py-2 space-x-2 transition duration-300 ease-in-out hover:bg-gray-200">
               {likes?.length > 0 && <div title={generateLikeCounterTitle(likes, decoded.id)}>{likes.length}</div>}
-              <button onClick={() => handleLike("reply", reply._id, setLikes, decoded.id)} className="">
+              <button onClick={() => handleLikes("reply", reply._id, handleLike, setLikes)} className="">
                 {likes?.includes(decoded?.id) ? <img src={heartSolid} alt="Heart Solid" className="w-4 h-4" title="undo like" /> : <img src={heartOutline} alt="Heart Outline" className="w-4 h-4" title="like this post" />}
               </button>
             </div>
@@ -117,7 +128,6 @@ const ReplyTile = ({ reply, onReply }) => {
 };
 
 const Topic = () => {
-  const { decoded } = useAuth();
   const routeParams = useParams();
   const navigate = useNavigate();
   const [category, setCategory] = useState(localStorage.getItem("selectedCategory"));
@@ -135,44 +145,35 @@ const Topic = () => {
     parentMessageCreatorPicture: null,
   });
   const [startTime] = useState(new Date());
+  const { data: topicData, error } = useGetTopicQuery({ category, topicId: routeParams.topicId });
+  const [sendElapsedReadingTime] = useSendElapsedReadingTimeMutation();
 
   useEffect(() => {
-    if (!decoded) return;
-    const fetchTopic = async () => {
-      const topicId = routeParams.id;
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/topics/${category}/${topicId}`, {
-          params: { userId: decoded.id },
-        });
-        setTopic(response.data);
-        setReplies(response.data.replies);
-      } catch (error) {
-        console.error("Error fetching topic:", error);
-      }
-    };
+    if (topicData) {
+      setTopic(topicData);
+      setReplies(topicData.replies);
+    }
 
-    fetchTopic();
-
-    const sendElapsedReadingTime = async () => {
+    const sendElapsedTime = async () => {
       const endTime = Date.now();
       const elapsedTimeInSeconds = Math.floor((endTime - startTime) / 1000);
       const payload = { time: elapsedTimeInSeconds };
       try {
-        await axios.put(`${import.meta.env.VITE_API_BASE_URL}/profile/${decoded.id}/read-time`, payload);
+        await sendElapsedReadingTime(payload).unwrap();
       } catch (error) {
         console.error("Error sending elapsed reading time:", error);
       }
     };
 
     // send elapsed reading time when user "closes tab/refreshes page/goes to a different domain"
-    window.addEventListener("beforeunload", sendElapsedReadingTime);
+    window.addEventListener("beforeunload", sendElapsedTime);
 
     return () => {
-      window.removeEventListener("beforeunload", sendElapsedReadingTime);
+      window.removeEventListener("beforeunload", sendElapsedTime);
       // send elapsed reading time when user "navigates away from the topic page"
-      sendElapsedReadingTime();
+      sendElapsedTime();
     };
-  }, [category, routeParams.id, startTime, decoded]);
+  }, [topicData]);
 
   useEffect(() => {
     if (replies.length === 0) return;
@@ -207,6 +208,20 @@ const Topic = () => {
     });
   };
 
+  if (error) {
+    return (
+      <div>
+        <div className="fixed left-0 top-12 overflow-y-auto z-10">
+          <SideBar category={category} setCategory={handleCategoryChange} />
+        </div>
+        <div className="ml-[260px] p-12 text-red-500">
+          <span>{error.status} : </span>
+          {error.data?.message || "An error occurred. Please try again later."}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="fixed left-0 top-12 overflow-y-auto z-10">
@@ -216,7 +231,7 @@ const Topic = () => {
         <h2 className="text-2xl font-bold mb-3">{topic.title}</h2>
         <div className="mb-8">{topic.category}</div>
         <div className="message-box">
-          <MessageTile topic={topic} onReply={onReply} />
+          <MessageTile key={topic._id} topic={topic} onReply={onReply} />
         </div>
         <div className="replies-box">
           {replies.map((reply) => (
@@ -258,10 +273,10 @@ ReplyTile.propTypes = {
   onReply: PropTypes.func,
 };
 
-const handleLike = async (type, messageId, setLikes, userId) => {
+const handleLikes = async (type, messageId, handleLike, setLikes) => {
   try {
-    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/${messageId}/like`, { type, userId });
-    setLikes(response.data.likes);
+    const response = await handleLike({ type, messageId }).unwrap();
+    setLikes(response.likes);
   } catch (error) {
     console.error("Error toggling like:", error);
   }

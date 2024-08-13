@@ -17,7 +17,6 @@ const PrivateRoutes = () => {
     const verifyRefreshToken = async () => {
       try {
         const response = await refresh().unwrap();
-        console.log("response", response);
         setTrueSuccess(true);
       } catch (err) {
         console.err(err);
@@ -26,7 +25,6 @@ const PrivateRoutes = () => {
 
     if (effectRan.current === false && persist) {
       if (!token) {
-        console.log("verify running");
         verifyRefreshToken();
       }
       effectRan.current = true;

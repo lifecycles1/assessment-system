@@ -16,13 +16,19 @@ connectToMongoDB();
 
 // Routes
 const authRoutes = require("./routes/auth");
-const assessmentRoutes = require("./routes/assessments");
 // deployed version - all routes use /api prefix e.g. app.use ("/api", authRoutes); configured from dispatch.yaml
 app.use(authRoutes);
-app.use(assessmentRoutes);
+
+// private routes - require authorization
+const verifyJWT = require("./middleware/verifyJWT");
+app.use(verifyJWT);
+
 // learning paths routes
 const learningPathsRoutes = require("./routes/learningPaths");
 app.use(learningPathsRoutes);
+// assessment routes
+const assessmentRoutes = require("./routes/assessments");
+app.use(assessmentRoutes);
 // forum routes
 const topicRoutes = require("./routes/forum/topics");
 const replyRoutes = require("./routes/forum/replies");

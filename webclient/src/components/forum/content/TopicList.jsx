@@ -1,10 +1,9 @@
 import PropTypes from "prop-types";
-import axios from "axios";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import NewTopicModal from "../modals/NewTopicModal";
 import { updateFeed } from "../../../utils/forum/common";
-import useAuth from "../../../hooks/useAuth";
+import { useGetTopicsQuery } from "../../../features/forum/topicsApiSlice";
 
 const TopicTile = ({ topic }) => {
   return (
@@ -30,23 +29,14 @@ const TopicTile = ({ topic }) => {
 };
 
 const TopicList = ({ category }) => {
-  const { decoded } = useAuth();
   const [topics, setTopics] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState("desc");
+  const { data: topicsData, error } = useGetTopicsQuery(category, { skip: category.length === 0 });
 
   useEffect(() => {
-    if (!decoded) return;
-    const fetchTopics = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/topics/${category}?userId=${decoded.id}`);
-        setTopics(response.data);
-      } catch (error) {
-        console.error("Error fetching topics:", error);
-      }
-    };
-    if (category.length > 0) fetchTopics();
-  }, [category, decoded]);
+    if (topicsData) setTopics(topicsData);
+  }, [topicsData]);
 
   const sortTopics = (type) => {
     // toggle sort order (type === "latest" is not toggleable)
@@ -96,6 +86,12 @@ const TopicList = ({ category }) => {
           {/* <div>Activity</div> */}
         </div>
       </div>
+      {error && (
+        <div className="text-red-500">
+          <span>{error.status} : </span>
+          {error.data?.message || "An error occurred. Please try again later."}
+        </div>
+      )}
       {topics.map((topic) => (
         <TopicTile key={topic._id} topic={topic} />
       ))}

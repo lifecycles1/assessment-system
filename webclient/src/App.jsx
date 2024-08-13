@@ -38,7 +38,7 @@ function App() {
             <Route path="dashboard/assessments" element={<Assessments />} />
             {/* forum */}
             <Route path="forum/:category" element={<Forum />} />
-            <Route path="forum/:category/t/:id" element={<Topic />} />
+            <Route path="forum/:category/t/:topicId" element={<Topic />} />
             {/* forum profile */}
             <Route path="forum/u" element={<Profile />}>
               <Route path="summary" element={<Summary />} />

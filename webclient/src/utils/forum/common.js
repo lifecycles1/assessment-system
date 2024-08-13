@@ -10,6 +10,7 @@ export const updateFeed = (newItem, setList) => {
  * @returns {object} - An object containing the display value and hover text.
  */
 export const calculateTimeDifference = (date) => {
+  if (!date) return { display: "", hoverText: "" };
   const currentDate = new Date();
   const creationDate = new Date(date);
   const timeDifference = currentDate - creationDate;

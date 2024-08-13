@@ -2,10 +2,10 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 import axios from "axios";
 import { useDropzone } from "react-dropzone";
-import { useAuth } from "../../hooks/useAuthContext";
+import useAuth from "../../hooks/useAuth";
 
 const FileUpload = ({ data }) => {
-  const { token } = useAuth();
+  const { decoded } = useAuth();
   const [responseMessage, setResponseMessage] = useState(null);
 
   const maxFileSize = 1024 * 1024; // 1MB
@@ -27,7 +27,7 @@ const FileUpload = ({ data }) => {
     // Create a FormData object to send the file and the question to the server
     const formData = new FormData();
     formData.append("file", selectedFile);
-    formData.append("email", token.email);
+    formData.append("email", decoded.email);
     formData.append("language", selectedFile.name.endsWith(".js") ? "javascript" : "python");
     formData.append("question", JSON.stringify(data.challenge));
 

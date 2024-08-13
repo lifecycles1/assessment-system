@@ -1,22 +1,21 @@
-import axios from "axios";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import leftArrow from "../../../assets/left-arrow.svg";
-import useAuth from "../../../hooks/useAuth";
+import { useAddReplyMutation } from "../../../features/forum/topicsApiSlice";
 
 const NewReplyModal = ({ topicId, title, parentType, parentMessageId, parentMessageCreator, parentMessage, parentMessageCreatorEmail, parentMessageCreatorPicture, onClose, updateFeed }) => {
-  const { decoded } = useAuth();
   const [message, setMessage] = useState("");
+  const [addReply, { isError, error }] = useAddReplyMutation();
 
   const handleSubmit = async () => {
-    if (decoded.id && message && parentMessageId && parentMessageCreator && parentMessage) {
+    if (message && parentMessageId && parentMessageCreator && parentMessage) {
       try {
-        const payload = { userId: decoded.id, message, parentMessageId, parentMessageCreator, parentMessage };
-        const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/${topicId}/reply`, payload);
-        updateFeed(response.data);
+        const response = await addReply({ message, parentMessageId, parentMessageCreator, parentMessage, topicId }).unwrap();
+        updateFeed(response);
         onClose();
-      } catch (error) {
-        console.log(error);
+      } catch (err) {
+        console.log(err);
+        setMessage(error);
       }
     }
   };

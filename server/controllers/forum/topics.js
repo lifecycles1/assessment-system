@@ -4,17 +4,17 @@ const Reply = require("../../models/forum/reply");
 
 const createTopic = async (req, res) => {
   try {
-    const { title, category, message, userId } = req.body;
+    const { title, category, message } = req.body;
 
     const newTopic = new Topic({
-      creator: userId,
+      creator: req.user,
       title,
       message,
       category,
     });
     await newTopic.save();
 
-    const forumProfile = await ForumProfile.findOne({ user: userId });
+    const forumProfile = await ForumProfile.findOne({ user: req.user });
     forumProfile.incrementPostCount();
 
     return res.status(201).json(newTopic);
@@ -48,7 +48,7 @@ const getTopics = async (req, res) => {
       },
     ]);
 
-    const forumProfile = await ForumProfile.findOne({ user: req.query.userId });
+    const forumProfile = await ForumProfile.findOne({ user: req.user });
     forumProfile?.updateDaysVisited();
 
     return res.status(200).json(topics);
@@ -60,12 +60,12 @@ const getTopics = async (req, res) => {
 
 const getTopic = async (req, res) => {
   try {
-    const topic = await Topic.findById(req.params.id).populate({ path: "creator", select: "email picture" });
-    const replies = await Reply.find({ parentTopicId: req.params.id }).populate({ path: "creator", select: "email picture" });
+    const topic = await Topic.findById(req.params.topicId).populate({ path: "creator", select: "email picture" });
+    const replies = await Reply.find({ parentTopicId: req.params.topicId }).populate({ path: "creator", select: "email picture" });
 
     topic.incrementViews();
-    const forumProfile = await ForumProfile.findOne({ user: req.query.userId });
-    forumProfile.incrementTopicsViewed(req.params.id);
+    const forumProfile = await ForumProfile.findOne({ user: req.user });
+    forumProfile.incrementTopicsViewed(req.params.topicId);
 
     return res.status(200).json({
       ...topic.toObject(),
