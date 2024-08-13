@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 
 // Path to the allowedOrigins.js file
-const allowedOriginsPath = path.join(__dirname, "server", "config", "allowedOrigins.js");
+const allowedOriginsPath = path.join(__dirname, "allowedOrigins.js");
 
 // Read the allowedOrigins.js file
 let allowedOriginsContent = fs.readFileSync(allowedOriginsPath, "utf8");
