@@ -4,7 +4,7 @@ const { studentSubmitAssessment, getStudentAssessments, getTeacherAssessments, m
 
 router.post("/submit-assessment", studentSubmitAssessment);
 
-router.get("/student-assessments/:email", getStudentAssessments);
+router.get("/student-assessments", getStudentAssessments);
 
 router.get("/teacher-assessments", getTeacherAssessments);
 

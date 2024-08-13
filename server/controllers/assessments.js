@@ -13,7 +13,6 @@ const studentSubmitAssessment = async (req, res) => {
     if (req.get("content-type") === "application/json") {
       AssessmentModel = EditorAssessment;
       const { email, language, code, question } = req.body;
-      console.log("student submit assessment", req.body);
       assessmentData = { email, language, question, code };
     } else if (req.get("content-type").startsWith("multipart/form-data")) {
       AssessmentModel = FileAssessment;
@@ -58,9 +57,8 @@ const studentSubmitAssessment = async (req, res) => {
 
 const getStudentAssessments = async (req, res) => {
   try {
-    const { email } = req.params;
-    const editorAssessments = await EditorAssessment.find({ email }).sort({ createdAt: -1 });
-    const fileAssessments = await FileAssessment.find({ email }).sort({ createdAt: -1 });
+    const editorAssessments = await EditorAssessment.find({ email: req.query.email }).sort({ createdAt: -1 });
+    const fileAssessments = await FileAssessment.find({ email: req.query.email }).sort({ createdAt: -1 });
     const studentAssessments = [...editorAssessments, ...fileAssessments];
     return res.status(200).json(studentAssessments);
   } catch (error) {

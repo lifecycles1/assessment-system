@@ -8,6 +8,8 @@ import AceEditor from "react-ace";
 import axios from "axios";
 import LoadingButton from "../common/LoadingButton";
 import useAuth from "../../hooks/useAuth";
+import { useSubmitAssessmentMutation } from "../../features/assessments/assessmentsApiSlice";
+import { useSubmitPathChallengeMutation } from "../../features/learningPaths/learningPathsApiSlice";
 
 const CodeEditor = ({ data }) => {
   const { decoded } = useAuth();
@@ -27,6 +29,8 @@ const CodeEditor = ({ data }) => {
   const dragRef = useRef(null);
   const testsRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [submitPathChallenge, { isLoading, error }] = useSubmitPathChallengeMutation();
+  const [submitAssessment, { isLoading: isSubmitAssessmentLoading, error: isSubmitAssessmentError }] = useSubmitAssessmentMutation();
 
   const runTests = async () => {
     setLoadingBtn(true);
@@ -73,8 +77,6 @@ const CodeEditor = ({ data }) => {
         return;
       }
       const codeToSubmit = selectedLanguage === "javascript" ? javascriptCode : pythonCode;
-      // submit-assessment endpoint temporarily deprecated
-      const endpoint = data.challenge.type === "learningPath" ? "submit-pathChallenge" : "submit-assessment";
       const payload =
         data.challenge.type === "learningPath"
           ? // learning path challenge
@@ -92,12 +94,16 @@ const CodeEditor = ({ data }) => {
               question: data.challenge,
               code: codeToSubmit,
             };
-      // deployed version - http://localhost:8080/ replaced with /api/ (see dispatch.yaml)
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/${endpoint}`, payload);
-      setResponseMessage(response.data.message === "success" ? "Code submitted successfully!" : "Code submission failed.");
-    } catch (error) {
-      setResponseMessage("Error submitting code.");
-      console.error(error);
+      if (data.challenge.type === "learningPath") {
+        const response = await submitPathChallenge(payload).unwrap();
+        setResponseMessage(response.message === "success" ? "Code submitted successfully!" : "Code submission failed.");
+      } else if (data.challenge.type === "assessment") {
+        const response = await submitAssessment(payload).unwrap();
+        setResponseMessage(response.message === "success" ? "Code submitted successfully!" : "Code submission failed.");
+      }
+    } catch (err) {
+      setResponseMessage(`${error?.status} : ${error?.data?.message}` || "Error submitting code.");
+      console.error(err);
     } finally {
       setLoadingSubmitBtn(false);
     }
@@ -194,7 +200,7 @@ export default CodeEditor;
 const Tests = ({ paramArray, responseMessage, testResults }) => {
   return (
     <div>
-      {responseMessage && <div className={`mt-4 text-sm ${responseMessage.includes("successfully") ? "text-[#23776d]" : "text-red-400"}`}>{responseMessage}</div>}
+      {responseMessage && <div className={`mt-3 ml-4 text-sm ${responseMessage.includes("successfully") ? "text-[#23776d]" : "text-red-400"}`}>{responseMessage}</div>}
       {testResults && (
         <div className="px-4 py-2 rounded-b-md">
           <div className={`font-semibold text-lg mb-2 ${testResults.isCorrect.every((result) => result) ? "text-[#23776d]" : "text-red-400"}`}>{`Tests Passed: ${testResults.isCorrect.filter((result) => result).length}/${testResults.isCorrect.length}`}</div>

@@ -13,6 +13,7 @@ export const learningPathsApiSlice = apiSlice.injectEndpoints({
           return response.status === 200 && !result.isError;
         },
       }),
+      providesTags: ["LearningPath"],
       keepUnusedDataFor: 5,
       // transformResponse: (responseData) => {
       //   console.log("responseData", responseData);
@@ -28,10 +29,18 @@ export const learningPathsApiSlice = apiSlice.injectEndpoints({
       //   } else return [{ type: "LearningPath", id: "LIST" }];
       // },
     }),
+    submitPathChallenge: builder.mutation({
+      query: (payload) => ({
+        url: "/submit-pathChallenge",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["LearningPath"],
+    }),
   }),
 });
 
-export const { useGetLearningPathsQuery } = learningPathsApiSlice;
+export const { useGetLearningPathsQuery, useSubmitPathChallengeMutation } = learningPathsApiSlice;
 
 // // returns the query result object
 // export const selectLearningPathsResult = learningPathsApiSlice.endpoints.getLearningPaths.select();

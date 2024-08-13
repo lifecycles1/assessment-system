@@ -7,8 +7,9 @@ const commonFields = {
   createdAt: { type: Date, default: Date.now },
   language: { type: String, required: true },
   question: {
-    id: { type: Number, required: true },
-    name: { type: String, required: true },
+    _id: { type: mongoose.Schema.Types.ObjectId, required: true },
+    title: { type: String, required: true },
+    learningPath: { type: String, required: true },
     suggestedTime: { type: String, required: true },
     difficulty: { type: String, required: true },
     question: { type: String, required: true },

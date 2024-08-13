@@ -23,12 +23,12 @@ app.use(authRoutes);
 const verifyJWT = require("./middleware/verifyJWT");
 app.use(verifyJWT);
 
-// learning paths routes
-const learningPathsRoutes = require("./routes/learningPaths");
-app.use(learningPathsRoutes);
 // assessment routes
 const assessmentRoutes = require("./routes/assessments");
 app.use(assessmentRoutes);
+// learning paths routes
+const learningPathsRoutes = require("./routes/learningPaths");
+app.use(learningPathsRoutes);
 // forum routes
 const topicRoutes = require("./routes/forum/topics");
 const replyRoutes = require("./routes/forum/replies");

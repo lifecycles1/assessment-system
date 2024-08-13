@@ -9,9 +9,7 @@ const login = async () => {
   const loginResponse = await request(app).post("/signin").send({ email: "testuser9@example.com", password: "123" }).expect("Content-Type", /json/).expect(200);
   expect(loginResponse.body).toHaveProperty("token");
   const token = loginResponse.body.token;
-  const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-  const userId = decodedToken.id;
-  return userId;
+  return token;
 };
 
 describe("Backend Integration Tests", () => {
@@ -31,48 +29,57 @@ describe("Backend Integration Tests", () => {
 
   test("Fetch user profile", async () => {
     // login and get the token
-    const userId = await login();
+    const token = await login();
     // fetch the profile
-    const profileResponse = await request(app).get(`/profile/${userId}`).expect("Content-Type", /json/).expect(200);
+    const profileResponse = await request(app).get(`/profile`).set("Authorization", `Bearer ${token}`).expect("Content-Type", /json/).expect(200);
     expect(profileResponse.body).toHaveProperty("user");
   });
 
   test("Fetch forum topics", async () => {
     // login and get the token
-    const userId = await login();
+    const token = await login();
     // fetch the forum topics
-    const response = await request(app).get("/topics/home").query({ userId }).expect("Content-Type", /json/).expect(200);
+    const response = await request(app).get("/topics/home").set("Authorization", `Bearer ${token}`).expect("Content-Type", /json/).expect(200);
     expect(response.body).toBeInstanceOf(Array);
   });
 
   test("fetch forum topic by id", async () => {
     // login and get the token
-    const userId = await login();
+    const token = await login();
     // fetch the forum topics
-    const getTopicsResponse = await request(app).get("/topics/home").query({ userId }).expect("Content-Type", /json/).expect(200);
+    const getTopicsResponse = await request(app).get("/topics/home").set("Authorization", `Bearer ${token}`).expect("Content-Type", /json/).expect(200);
     expect(getTopicsResponse.body).toBeInstanceOf(Array);
     // get the first topic's id
     const topic = getTopicsResponse.body[0];
     expect(topic).toHaveProperty("_id");
     const topicId = topic._id;
     // fetch the topic by id
-    const response = await request(app).get(`/topics/general/${topicId}`).query({ userId }).expect("Content-Type", /json/).expect(200);
+    const response = await request(app).get(`/topics/general/${topicId}`).set("Authorization", `Bearer ${token}`).expect("Content-Type", /json/).expect(200);
     expect(response.body).toBeInstanceOf(Object);
   });
 
   test("Create a new forum topic", async () => {
     // login and get the token
-    const userId = await login();
+    const token = await login();
     // create a new topic
-    const topicResponse = await request(app).post("/createTopic").send({ userId, title: "New Test Topic", message: "This is a new topic content", category: "general" }).expect("Content-Type", /json/).expect(201);
+    const topicResponse = await request(app)
+      .post("/createTopic")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        title: "New Test Topic",
+        message: "This is a new topic content",
+        category: "general",
+      })
+      .expect("Content-Type", /json/)
+      .expect(201);
     expect(topicResponse.body).toHaveProperty("_id");
   });
 
   test("Create a new forum reply", async () => {
     // login and get the token
-    const userId = await login();
+    const token = await login();
     // fetch the forum topics
-    const getTopicsResponse = await request(app).get("/topics/home").query({ userId }).expect("Content-Type", /json/).expect(200);
+    const getTopicsResponse = await request(app).get("/topics/home").set("Authorization", `Bearer ${token}`).expect("Content-Type", /json/).expect(200);
     expect(getTopicsResponse.body).toBeInstanceOf(Array);
     // get the first topic's id
     const topic = getTopicsResponse.body[0];
@@ -82,8 +89,8 @@ describe("Backend Integration Tests", () => {
     // 1 - create a new reply on a topic
     const replyToTopicResponse = await request(app)
       .post(`/${topicId}/reply`)
+      .set("Authorization", `Bearer ${token}`)
       .send({
-        userId,
         message: "1This is a new reply content",
         parentTopicId: topicId,
         parentMessageId: topicId,
@@ -99,8 +106,8 @@ describe("Backend Integration Tests", () => {
     const replyId = reply._id;
     const replyToReplyResponse = await request(app)
       .post(`/${topicId}/reply`)
+      .set("Authorization", `Bearer ${token}`)
       .send({
-        userId,
         message: "This is a reply to a reply",
         parentTopicId: topicId,
         parentMessageId: replyId,
