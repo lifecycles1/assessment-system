@@ -22,6 +22,22 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: 🔎 Check IP
+        id: check_ip
+        run: |
+          echo "Fetching IP..."
+          IP_ADDRESS=$(curl -s https://api.ipify.org)
+          echo "Public IP: $IP_ADDRESS"
+          echo "IP_ADDRESS=$IP_ADDRESS" >> $GITHUB_ENV
+
+      - name: Add Runner IP to allowedOrigins.js
+        run: |
+          cd server
+          cd config
+          node add-runner-ip-to-allowedOrigins.js
+        env:
+          IP_ADDRESS: ${{ env.IP_ADDRESS }}
+
       - name: Change directory to server and install dependencies
         run: |
           cd server
