@@ -13,7 +13,7 @@ learningPathSchema.statics.loadPathsAndProgress = async function (userId) {
   try {
     let firstPath;
     const pathProgresses = await PathProgress.find({ user: userId });
-    const learningPaths = await this.find().lean();
+    const learningPaths = await this.find().sort({ _id: 1 }).lean();
 
     if (!pathProgresses.length) {
       const firstLearningPath = learningPaths[0];

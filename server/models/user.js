@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
 });
 
-// Pre-remove middleware to delete all posts and replies of the user
+// Post-remove middleware to delete all posts and replies of the user
 userSchema.post("remove", async function (doc, next) {
   try {
     // Delete all posts by the user

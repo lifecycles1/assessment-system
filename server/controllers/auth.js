@@ -83,14 +83,13 @@ const signin = async (req, res) => {
       process.env.REFRESH_KEY
     );
 
-    // res.cookie("refreshToken", refreshToken, {
-    //   httpOnly: true, // accessible only by web server
-    //   secure: true, // https
-    //   sameSite: "None", // cross-site
-    //   maxAge: 60 * 60 * 24 * 7 * 1000, // 7 days
-    //   domain: ".to6ko.com",
-    //   partitioned: true,
-    // });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true, // accessible only by web server
+      secure: true, // https
+      sameSite: "None", // cross-site
+      maxAge: 60 * 60 * 24 * 7 * 1000, // 7 days
+      // domain: ".to6ko.com",
+    });
 
     // Send the token to the client
     res.status(200).json({ message: "Login successful", token });
@@ -102,7 +101,6 @@ const signin = async (req, res) => {
 
 const refresh = async (req, res) => {
   const cookies = req.cookies;
-  console.log("cookies", cookies);
   if (!cookies?.refreshToken) return res.status(401).json({ message: "Unauthorized" });
   const refreshToken = cookies.refreshToken;
 

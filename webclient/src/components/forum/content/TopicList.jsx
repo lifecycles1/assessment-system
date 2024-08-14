@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import NewTopicModal from "../modals/NewTopicModal";
 import { updateFeed } from "../../../utils/forum/common";
 import { useGetTopicsQuery } from "../../../features/forum/topicsApiSlice";
+import LoadingSpinner from "../../common/LoadingSpinner";
 
 const TopicTile = ({ topic }) => {
   return (
@@ -32,7 +33,7 @@ const TopicList = ({ category }) => {
   const [topics, setTopics] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState("desc");
-  const { data: topicsData, error } = useGetTopicsQuery(category, { skip: category.length === 0 });
+  const { data: topicsData, isLoading, error } = useGetTopicsQuery(category, { skip: category.length === 0 });
 
   useEffect(() => {
     if (topicsData) setTopics(topicsData);
@@ -92,6 +93,7 @@ const TopicList = ({ category }) => {
           {error.data?.message || "An error occurred. Please try again later."}
         </div>
       )}
+      {isLoading && <LoadingSpinner />}
       {topics.map((topic) => (
         <TopicTile key={topic._id} topic={topic} />
       ))}

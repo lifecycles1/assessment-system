@@ -10,6 +10,7 @@ import heartSolid from "../../../assets/heart-solid.svg";
 import useAuth from "../../../hooks/useAuth";
 import { useGetTopicQuery, useHandleLikeMutation } from "../../../features/forum/topicsApiSlice";
 import { useSendElapsedReadingTimeMutation } from "../../../features/forum/profileApiSlice";
+import LoadingSpinner from "../../common/LoadingSpinner";
 
 const MessageTile = ({ topic, onReply }) => {
   const { decoded } = useAuth();
@@ -145,7 +146,7 @@ const Topic = () => {
     parentMessageCreatorPicture: null,
   });
   const [startTime] = useState(new Date());
-  const { data: topicData, error } = useGetTopicQuery({ category, topicId: routeParams.topicId });
+  const { data: topicData, isLoading, error } = useGetTopicQuery({ category, topicId: routeParams.topicId });
   const [sendElapsedReadingTime] = useSendElapsedReadingTimeMutation();
 
   useEffect(() => {
@@ -217,6 +218,19 @@ const Topic = () => {
         <div className="ml-[260px] p-12 text-red-500">
           <span>{error.status} : </span>
           {error.data?.message || "An error occurred. Please try again later."}
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div>
+        <div className="fixed left-0 top-12 overflow-y-auto z-10">
+          <SideBar category={category} setCategory={handleCategoryChange} />
+        </div>
+        <div className="ml-[260px] p-12">
+          <LoadingSpinner />
         </div>
       </div>
     );
