@@ -83,14 +83,14 @@ const signin = async (req, res) => {
       process.env.REFRESH_KEY
     );
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true, // accessible only by web server
-      secure: true, // https
-      sameSite: "None", // cross-site
-      maxAge: 60 * 60 * 24 * 7 * 1000, // 7 days
-      domain: ".to6ko.com",
-      partitioned: true,
-    });
+    // res.cookie("refreshToken", refreshToken, {
+    //   httpOnly: true, // accessible only by web server
+    //   secure: true, // https
+    //   sameSite: "None", // cross-site
+    //   maxAge: 60 * 60 * 24 * 7 * 1000, // 7 days
+    //   domain: ".to6ko.com",
+    //   partitioned: true,
+    // });
 
     // Send the token to the client
     res.status(200).json({ message: "Login successful", token });

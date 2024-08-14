@@ -29,8 +29,7 @@ const Login = () => {
     try {
       const { token } = await login({ email, password }).unwrap();
       dispatch(setCredentials({ token }));
-      setError(token);
-      // navigate("dashboard");
+      navigate("dashboard");
     } catch (err) {
       console.log(err);
       if (!err.status) {
@@ -59,11 +58,11 @@ const Login = () => {
           <div>
             <LoadingButton type="submit" loading={loading} className="w-full px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300" text="Login" />
           </div>
-          {/* {error && ( */}
-          <div className="text-red-500 text-center" aria-live="assertive">
-            tests {error}
-          </div>
-          {/* )} */}
+          {error && (
+            <div className="text-red-500 text-center" aria-live="assertive">
+              tests {error}
+            </div>
+          )}
         </form>
         <label htmlFor="persist" className="flex items-center justify-center cursor-pointer text-blue-500 hover:underline">
           <input type="checkbox" checked={persist} onChange={handleToggle} className="w-5 h-5 mr-1 text-blue-500 border rounded focus:ring" id="persist" />
