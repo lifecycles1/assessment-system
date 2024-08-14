@@ -25,14 +25,14 @@ const Signup = () => {
       setPassword("");
       setRole("");
       setSuccessMsg("Account created successfully. You can now login.");
-    } catch (error) {
-      console.error(error);
-      if (!err.status) {
+    } catch (err) {
+      console.error(err);
+      if (!error?.status) {
         setError("No Server Response");
-      } else if (err.status === 409) {
-        setError(`Duplicate: ${err.data?.message}`);
+      } else if (error?.status === 409) {
+        setError(`Duplicate: ${error?.data?.message}`);
       } else {
-        setError(err.data?.message);
+        setError(error?.data?.message);
       }
     } finally {
       setLoading(false);

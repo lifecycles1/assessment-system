@@ -1,3 +1,19 @@
+// - name: 🔎 Check IP
+// id: check_ip
+// run: |
+//   echo "Fetching IP..."
+//   IP_ADDRESS=$(curl -s https://api.ipify.org)
+//   echo "Public IP: $IP_ADDRESS"
+//   echo "IP_ADDRESS=$IP_ADDRESS" >> $GITHUB_ENV
+
+// - name: Add Runner IP to allowedOrigins.js
+// run: |
+//   cd server
+//   cd config
+//   node add-runner-ip-to-allowedOrigins.js
+// env:
+//   IP_ADDRESS: ${{ env.IP_ADDRESS }}
+
 const fs = require("fs");
 const path = require("path");
 
@@ -24,29 +40,3 @@ fs.writeFileSync(allowedOriginsPath, updatedContent, "utf8");
 
 console.log(`Added ${newIp} to allowedOrigins.`);
 console.log("Updated allowedOrigins array:", updatedContent);
-
-// // Extract the current allowedOrigins array
-// const allowedOriginsArrayMatch = allowedOriginsContent.match(/allowedOrigins\s*=\s*\[(.*?)\]/s);
-// if (!allowedOriginsArrayMatch) {
-//   console.error("allowedOrigins array not found!");
-//   process.exit(1);
-// }
-
-// // Get the existing array content (everything between the brackets)
-// let allowedOriginsArray = allowedOriginsArrayMatch[1].trim();
-
-// // Ensure there's no trailing comma before we add the new IP
-// allowedOriginsArray = allowedOriginsArray.replace(/,\s*$/, "");
-
-// // Insert the new IP address
-// const newIp = process.env.IP_ADDRESS;
-// allowedOriginsArray += `, '${newIp}'`;
-
-// // Replace the old array with the new one in the file content
-// allowedOriginsContent = allowedOriginsContent.replace(/allowedOrigins\s*=\s*\[(.*?)\]/s, `allowedOrigins = [\n  ${allowedOriginsArray}\n]`);
-
-// // Write the updated content back to the file
-// fs.writeFileSync(allowedOriginsPath, allowedOriginsContent, "utf8");
-
-// console.log("Updated allowedOrigins array:", allowedOriginsContent);
-// console.log(`Added ${newIp} to allowedOrigins.`);

@@ -1,12 +1,11 @@
-import { describe, test, expect, beforeAll, afterAll } from "vitest";
+import { describe, test, expect, afterAll } from "vitest";
 import request from "supertest";
-import { app, server } from "../../index";
+import { app, server } from "../../server";
 import { disconnectFromMongoDB } from "../../dbconnection/mongodb";
-import jwt from "jsonwebtoken";
 
 const login = async () => {
   // login and get the token
-  const loginResponse = await request(app).post("/signin").send({ email: "testuser9@example.com", password: "123" }).expect("Content-Type", /json/).expect(200);
+  const loginResponse = await request(app).post("/signin").send({ email: "sdfsd@email.com", password: "123" }).expect("Content-Type", /json/).expect(200);
   expect(loginResponse.body).toHaveProperty("token");
   const token = loginResponse.body.token;
   return token;
@@ -19,7 +18,7 @@ describe("Backend Integration Tests", () => {
   });
 
   test.skip("User registration", async () => {
-    const response = await request(app).post("/signup").send({ email: "testuser9@example.com", password: "123", role: "student" }).expect("Content-Type", /json/).expect(201);
+    const response = await request(app).post("/signup").send({ email: "sdfsd@email.com", password: "123", role: "student" }).expect("Content-Type", /json/).expect(201);
     expect(response.body).toHaveProperty("message", "User created successfully");
   });
 

@@ -16,7 +16,7 @@ test("student logs in successfully, navigates between all main routes, and logs 
   const passwordInput = screen.getByPlaceholderText(/password/i);
   const submitButton = screen.getByRole("button", { name: /login/i });
   // fireEvent.change(emailInput, { target: { value: "sdfsd@email.com" } }); // local mongodb user
-  fireEvent.change(emailInput, { target: { value: "testuser9@example.com" } }); // prod mongodb user for github actions
+  fireEvent.change(emailInput, { target: { value: "sdfsd@email.com" } }); // prod mongodb user for github actions
   fireEvent.change(passwordInput, { target: { value: "123" } }); // same password for both users
   fireEvent.click(submitButton);
   // expect user to be redirected to dashboard

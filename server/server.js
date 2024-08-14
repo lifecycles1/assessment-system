@@ -16,12 +16,9 @@ connectToMongoDB();
 
 // Routes
 const authRoutes = require("./routes/auth");
-// deployed version - all routes use /api prefix e.g. app.use ("/api", authRoutes); configured from dispatch.yaml
 app.use(authRoutes);
 
-// private routes - require authorization
-const verifyJWT = require("./middleware/verifyJWT");
-app.use(verifyJWT);
+// all routes below are private - require authorization
 
 // assessment routes
 const assessmentRoutes = require("./routes/assessments");

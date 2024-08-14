@@ -86,8 +86,10 @@ const signin = async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true, // accessible only by web server
       secure: true, // https
-      sameSite: "none", // cross-site
+      sameSite: "None", // cross-site
       maxAge: 60 * 60 * 24 * 7 * 1000, // 7 days
+      domain: ".to6ko.com",
+      partitioned: true,
     });
 
     // Send the token to the client
@@ -100,6 +102,7 @@ const signin = async (req, res) => {
 
 const refresh = async (req, res) => {
   const cookies = req.cookies;
+  console.log("cookies", cookies);
   if (!cookies?.refreshToken) return res.status(401).json({ message: "Unauthorized" });
   const refreshToken = cookies.refreshToken;
 
