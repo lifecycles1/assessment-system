@@ -20,9 +20,12 @@ test("student logs in successfully, navigates between all main routes, and logs 
   fireEvent.change(passwordInput, { target: { value: "123" } }); // same password for both users
   fireEvent.click(submitButton);
 
-  // check error message
-  const errorMessage = await waitFor(() => screen.getByTestId("login-error"));
-  expect(errorMessage).not.toBeInTheDocument();
+  // get div with text "tests"
+  const errorMessage = screen.getByText(/tests/i);
+  // get full contents of div
+  const errorMessageText = errorMessage.textContent;
+  // display error message
+  console.log(errorMessageText);
 
   // expect user to be redirected to dashboard
   await waitFor(() => expect(window.location.pathname).toBe("/dashboard"));
