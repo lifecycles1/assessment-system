@@ -29,6 +29,7 @@ const Login = () => {
     try {
       const { token } = await login({ email, password }).unwrap();
       dispatch(setCredentials({ token }));
+      setError(token);
       // navigate("dashboard");
     } catch (err) {
       console.log(err);
