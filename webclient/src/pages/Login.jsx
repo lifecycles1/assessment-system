@@ -29,7 +29,7 @@ const Login = () => {
     try {
       const { token } = await login({ email, password }).unwrap();
       dispatch(setCredentials({ token }));
-      navigate("dashboard");
+      // navigate("dashboard");
     } catch (err) {
       console.log(err);
       if (!err.status) {
@@ -37,7 +37,7 @@ const Login = () => {
       } else if (err.status === 401) {
         setError(`Unauthorized: ${err.data?.message}`);
       } else {
-        setError(err.data?.message);
+        setError(`${err.status} : ${err.data?.message}`);
       }
     } finally {
       setLoading(false);
@@ -59,7 +59,7 @@ const Login = () => {
             <LoadingButton type="submit" loading={loading} className="w-full px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300" text="Login" />
           </div>
           {error && (
-            <div className="text-red-500 text-center" aria-live="assertive">
+            <div data-testid="login-error" className="text-red-500 text-center" aria-live="assertive">
               {error}
             </div>
           )}

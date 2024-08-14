@@ -19,6 +19,11 @@ test("student logs in successfully, navigates between all main routes, and logs 
   fireEvent.change(emailInput, { target: { value: "sdfsd@email.com" } }); // prod mongodb user for github actions
   fireEvent.change(passwordInput, { target: { value: "123" } }); // same password for both users
   fireEvent.click(submitButton);
+
+  // check error message
+  const errorMessage = await waitFor(() => screen.getByTestId("login-error"));
+  expect(errorMessage).not.toBeInTheDocument();
+
   // expect user to be redirected to dashboard
   await waitFor(() => expect(window.location.pathname).toBe("/dashboard"));
 
