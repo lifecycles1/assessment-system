@@ -4,7 +4,7 @@ import { setCredentials } from "../../features/auth/authSlice";
 console.log("API_BASE_URL", import.meta.env.VITE_API_BASE_URL);
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "https://server-code-assessment.to6ko.com",
+  baseUrl: import.meta.env.VITE_API_BASE_URL || "https://server-code-assessment.to6ko.com",
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth.token;
