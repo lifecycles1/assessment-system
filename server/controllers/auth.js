@@ -88,7 +88,7 @@ const signin = async (req, res) => {
       secure: true, // https
       sameSite: "None", // cross-site
       maxAge: 60 * 60 * 24 * 7 * 1000, // 7 days
-      // domain: ".to6ko.com",
+      domain: ".to6ko.com",
     });
 
     // Send the token to the client

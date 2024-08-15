@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useGetLearningPathsQuery } from "../../features/learningPaths/learningPathsApiSlice";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 const LearningPaths = () => {
   const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
-  const { data: learningPathsData, error } = useGetLearningPathsQuery();
+  const { data: learningPathsData, isLoading, error } = useGetLearningPathsQuery();
 
   const isPathUnLocked = (title) => learningPathsData?.pathProgress.some((progress) => progress.learningPath === title);
 
@@ -30,6 +31,11 @@ const LearningPaths = () => {
     // TO-DO: change all these conditional renders to something better
     <div className="grid grid-cols-3 gap-4 p-8 bg-gray-800 h-[calc(100vh-48px)] overflow-y-auto">
       {error && <div className="table h-2 text-center col-span-2 text-red-500 bg-gray-200 p-4 rounded-md">{error?.data?.message}</div>}
+      {isLoading && (
+        <div className="text-white">
+          <LoadingSpinner />
+        </div>
+      )}
       {learningPathsData?.learningPaths.map((lp) => (
         <div key={lp._id} className="lp-tile col-span-3">
           {isPathUnLocked(lp.title) ? (
